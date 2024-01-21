@@ -5,6 +5,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+		
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>tsgen</ToolCommandName>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="MinVer" PrivateAssets="all" />
+	</ItemGroup>
+
+	<PropertyGroup Label="MinVer">
+		<MinVerAutoIncrement>minor</MinVerAutoIncrement>
+		<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
+		<MinVerTagPrefix>v</MinVerTagPrefix>
+	</PropertyGroup>
 </Project>

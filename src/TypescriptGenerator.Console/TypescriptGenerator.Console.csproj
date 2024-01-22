@@ -24,6 +24,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="Cocona" />
 		<PackageReference Include="MinVer" PrivateAssets="all" />
 	</ItemGroup>
 

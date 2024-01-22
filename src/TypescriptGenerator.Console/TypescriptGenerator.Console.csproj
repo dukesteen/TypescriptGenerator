@@ -10,6 +10,19 @@
 		<ToolCommandName>tsgen</ToolCommandName>
   </PropertyGroup>
 
+	<PropertyGroup Label="Nuget">
+		<Title>Duke.TypescriptGenerator</Title>
+		<Description>A roslyn based TypeScript API client generator.</Description>
+
+		<Authors>Duke</Authors>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryUrl>https://github.com/duksesteen/TypescriptGenerator</RepositoryUrl>
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="MinVer" PrivateAssets="all" />
 	</ItemGroup>

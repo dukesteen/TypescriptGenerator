@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
 		
 		<PackAsTool>true</PackAsTool>
+		<IsPackable>true</IsPackable>
+		
 		<ToolCommandName>tsgen</ToolCommandName>
   </PropertyGroup>
 
@@ -17,11 +16,15 @@
 		<Authors>Duke</Authors>
 
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>readme.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<RepositoryUrl>https://github.com/duksesteen/TypescriptGenerator</RepositoryUrl>
 	</PropertyGroup>
+	
+	<ItemGroup>
+		<None Include="../../README.md" Pack="true" PackagePath="/" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="Cocona" />

@@ -78,6 +78,13 @@ internal partial class Generator
 		var actionRoute = httpAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? "";
 		var relativePath = Path.Combine(controllerRouteString, actionRoute);
 
+		relativePath = HandleApiVersioning(endpointAction, relativePath);
+
+		return relativePath;
+	}
+
+	private static string HandleApiVersioning(IMethodSymbol endpointAction, string relativePath)
+	{
 		var versionAttributes = endpointAction.GetAttributes().Where(x => x.AttributeClass?.Name == "ApiVersionAttribute").ToList();
 
 		if (versionAttributes.Count > 1)

@@ -1,16 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-		
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+
 		<PackAsTool>true</PackAsTool>
 		<IsPackable>true</IsPackable>
-		
+
 		<ToolCommandName>tsgen</ToolCommandName>
-  </PropertyGroup>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="IntegrationTests"/>
+	</ItemGroup>
 
 	<PropertyGroup Label="Nuget">
 		<Title>Duke.TypescriptGenerator</Title>
+		<PackageId>Duke.TypescriptGenerator</PackageId>
 		<Description>A roslyn based TypeScript API client generator.</Description>
 
 		<Authors>Duke</Authors>
@@ -21,14 +26,26 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<RepositoryUrl>https://github.com/duksesteen/TypescriptGenerator</RepositoryUrl>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
-		<None Include="../../README.md" Pack="true" PackagePath="/" />
+		<None Include="../../README.md" Pack="true" PackagePath="/"/>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<PackageReference Include="Cocona" />
-		<PackageReference Include="MinVer" PrivateAssets="all" />
+		<PackageReference Include="Asp.Versioning.Abstractions"/>
+		<PackageReference Include="Cocona"/>
+		<PackageReference Include="Microsoft.Build.Locator"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild"/>
+		<PackageReference Include="MinVer" PrivateAssets="all"/>
+		<PackageReference Include="Serilog"/>
+		<PackageReference Include="Serilog.Extensions.Logging"/>
+		<PackageReference Include="Serilog.Settings.Configuration"/>
+		<PackageReference Include="Serilog.Sinks.Console"/>
 	</ItemGroup>
 
 	<PropertyGroup Label="MinVer">

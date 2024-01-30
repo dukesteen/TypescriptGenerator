@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1B77E4FD-C71
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{84427891-1296-41E5-B591-E9510F6F57E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypescriptGenerator.Console.IntegrationTests", "tests\TypescriptGenerator.Console.IntegrationTests\TypescriptGenerator.Console.IntegrationTests.csproj", "{0F9938B0-7F9E-40ED-8AB8-08DAAB453CB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{0F9938B0-7F9E-40ED-8AB8-08DAAB453CB8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{FE5C1B21-D4BF-44B2-962B-ADA9E33C7D4C}"
 	ProjectSection(SolutionItems) = preProject
@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\build.yml = .github\workflows\build.yml
 		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyWebApplication", "tests\EmptyWebApplication\EmptyWebApplication.csproj", "{DD4A6859-6315-4A41-8174-D5430C56E67C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,11 +53,16 @@ Global
 		{0F9938B0-7F9E-40ED-8AB8-08DAAB453CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F9938B0-7F9E-40ED-8AB8-08DAAB453CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F9938B0-7F9E-40ED-8AB8-08DAAB453CB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD4A6859-6315-4A41-8174-D5430C56E67C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD4A6859-6315-4A41-8174-D5430C56E67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD4A6859-6315-4A41-8174-D5430C56E67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD4A6859-6315-4A41-8174-D5430C56E67C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{53CF8BBC-C950-41BD-B71C-C90243641262} = {1B77E4FD-C71F-47D4-BAF1-FE2EF2EC50A6}
 		{0F9938B0-7F9E-40ED-8AB8-08DAAB453CB8} = {84427891-1296-41E5-B591-E9510F6F57E0}
 		{FE5C1B21-D4BF-44B2-962B-ADA9E33C7D4C} = {EA83B35C-4493-45ED-9748-06588C4B57DF}
 		{208F3050-F23C-4459-A6BD-9B5DE8ECB1D5} = {FE5C1B21-D4BF-44B2-962B-ADA9E33C7D4C}
+		{DD4A6859-6315-4A41-8174-D5430C56E67C} = {84427891-1296-41E5-B591-E9510F6F57E0}
 	EndGlobalSection
 EndGlobal

@@ -462,3 +462,5 @@ dotnet_diagnostic.CS4014.severity = error               # CS4014: Because this c
 dotnet_diagnostic.CA2007.severity = none                # CA2007: Consider calling ConfigureAwait on the awaited task
 
 dotnet_diagnostic.CA1303.severity = none                # CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1305.severity = none                # CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1848.severity = none                # CA1848: Use the LoggerMessage delegates.

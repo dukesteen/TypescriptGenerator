@@ -1,12 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 using Asp.Versioning;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 
 using TypescriptGenerator.Console.TsGen.Types;
+using TypescriptGenerator.Console.TsGen.Walkers;
 
 using ApiVersion = Asp.Versioning.ApiVersion;
 
@@ -14,31 +15,28 @@ namespace TypescriptGenerator.Console.TsGen;
 
 internal partial class Generator
 {
+	[SuppressMessage("Style", "IDE0010:Add missing cases")]
 	internal List<ApiEndpointDescriptor> DiscoverApiEndpoints(Compilation compilation)
 	{
-		var endpointActions = compilation.SyntaxTrees
-			.SelectMany(x => x.GetRoot().DescendantNodes())
-			.OfType<MethodDeclarationSyntax>()
-			.Where(x => x.AttributeLists.Any(y =>
-				y.Attributes.Any(z => z.Name.ToString() is "HttpGet" or "HttpPost" or "HttpPut" or "HttpDelete" or "HttpPatch")))
-			.Where(x => x.Parent is ClassDeclarationSyntax parent && parent.AttributeLists.Any(y =>
-				y.Attributes.Any(z => z.Name.ToString() == "ApiController"))).ToList();
+		var methods = new List<IMethodSymbol>();
+		foreach (var syntaxTree in compilation.SyntaxTrees)
+		{
+			var root = syntaxTree.GetRoot();
+			var semanticModel = compilation.GetSemanticModel(syntaxTree);
+			var methodDeclarationCollector = new MethodDeclarationCollector(semanticModel);
+			methodDeclarationCollector.Visit(root);
+			methods.AddRange(methodDeclarationCollector.MethodSymbols);
+		}
 
 		var endpoints = new List<ApiEndpointDescriptor>();
-		foreach (var endpointAction in endpointActions)
+		foreach (var methodSymbol in methods)
 		{
-			var semanticModel = compilation.GetSemanticModel(endpointAction.SyntaxTree);
-			var methodSymbol = semanticModel.GetDeclaredSymbol(endpointAction) as IMethodSymbol ??
-				throw new InvalidOperationException("Failed to get method symbol");
+			var httpAttribute = methodSymbol.GetAttributes()
+				.FirstOrDefault(x => Constants.HttpAttributeNames.Contains(x.AttributeClass?.ToDisplayString()))!;
 
-			var httpAttributes = GetHttpAttributes(methodSymbol);
-			if (httpAttributes.Count > 1)
-				throw new InvalidOperationException("Multiple HTTP attributes found on action");
+			var httpMethod = GetHttpMethodFromAttribute(httpAttribute);
+			var relativePath = GetRelativePathFromEndpointAction(methodSymbol, httpAttribute);
 
-			var httpattribute = httpAttributes.FirstOrDefault()!;
-
-			var httpMethod = GetHttpMethodFromAttributeData(httpattribute);
-			var relativePath = GetRelativePathFromEndpointAction(methodSymbol, httpattribute);
 			endpoints.Add(new ApiEndpointDescriptor(methodSymbol, httpMethod, relativePath));
 
 			logger.LogDebug("Discovered {HttpMethod} endpoint with action name {ActionName} and relative path {RelativePath}", httpMethod.ToString(),
@@ -48,32 +46,23 @@ internal partial class Generator
 		return endpoints;
 	}
 
-	private static EndpointHttpMethod GetHttpMethodFromAttributeData(AttributeData attribute)
+	private static EndpointHttpMethod GetHttpMethodFromAttribute(AttributeData attributeData)
 	{
-		return attribute.AttributeClass?.Name switch
+		return attributeData.AttributeClass?.ToDisplayString() switch
 		{
-			"HttpGetAttribute" => EndpointHttpMethod.Get,
-			"HttpPostAttribute" => EndpointHttpMethod.Post,
-			"HttpPutAttribute" => EndpointHttpMethod.Put,
-			"HttpDeleteAttribute" => EndpointHttpMethod.Delete,
-			"HttpPatchAttribute" => EndpointHttpMethod.Patch,
+			"Microsoft.AspNetCore.Mvc.HttpGetAttribute" => EndpointHttpMethod.Get,
+			"Microsoft.AspNetCore.Mvc.HttpPostAttribute" => EndpointHttpMethod.Post,
+			"Microsoft.AspNetCore.Mvc.HttpPutAttribute" => EndpointHttpMethod.Put,
+			"Microsoft.AspNetCore.Mvc.HttpDeleteAttribute" => EndpointHttpMethod.Delete,
+			"Microsoft.AspNetCore.Mvc.HttpPatchAttribute" => EndpointHttpMethod.Patch,
 			_ => throw new InvalidOperationException("Failed to find HTTP method"),
 		};
-	}
-
-	private static List<AttributeData> GetHttpAttributes(IMethodSymbol endpointAction)
-	{
-		return endpointAction.GetAttributes()
-			.Where(x => x.AttributeClass?.Name is "HttpGetAttribute" or "HttpPostAttribute" or "HttpPutAttribute" or "HttpDeleteAttribute"
-				or "HttpPatchAttribute")
-			.ToList();
 	}
 
 	private static string GetRelativePathFromEndpointAction(IMethodSymbol endpointAction, AttributeData httpAttribute)
 	{
 		var controllerRouteAttributes = endpointAction.ContainingType.GetAttributes().Where(x => x.AttributeClass?.Name == "RouteAttribute").ToList();
-		if (controllerRouteAttributes.Count > 1)
-			throw new InvalidOperationException("Multiple Route attributes found on controller");
+		if (controllerRouteAttributes.Count > 1) throw new InvalidOperationException("Multiple Route attributes found on controller");
 
 		var controllerRouteAttribute = controllerRouteAttributes.FirstOrDefault();
 		var controllerRouteString = controllerRouteAttribute?.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? "";
@@ -90,14 +79,12 @@ internal partial class Generator
 	{
 		var versionAttributes = endpointAction.GetAttributes().Where(x => x.AttributeClass?.Name == "ApiVersionAttribute").ToList();
 
-		if (versionAttributes.Count > 1)
-			throw new InvalidOperationException("Multiple ApiVersion attributes found on action");
+		if (versionAttributes.Count > 1) throw new InvalidOperationException("Multiple ApiVersion attributes found on action");
 
 		if (versionAttributes.Count == 0)
 		{
 			versionAttributes = endpointAction.ContainingType.GetAttributes().Where(x => x.AttributeClass?.Name == "ApiVersionAttribute").ToList();
-			if (versionAttributes.Count > 1)
-				throw new InvalidOperationException("Multiple ApiVersion attributes found on controller");
+			if (versionAttributes.Count > 1) throw new InvalidOperationException("Multiple ApiVersion attributes found on controller");
 		}
 
 		var versionAttribute = versionAttributes.FirstOrDefault();
@@ -109,8 +96,7 @@ internal partial class Generator
 			var version = versionAttribute.ConstructorArguments.FirstOrDefault().Value;
 			if (version is string versionString)
 			{
-				if (ApiVersionParser.Default.TryParse(versionString, out var apiVersionFromString))
-					apiVersion = apiVersionFromString;
+				if (ApiVersionParser.Default.TryParse(versionString, out var apiVersionFromString)) apiVersion = apiVersionFromString;
 			}
 			else if (version is double doubleVersion)
 			{

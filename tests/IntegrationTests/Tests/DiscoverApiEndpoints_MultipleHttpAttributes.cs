@@ -35,6 +35,7 @@ public partial class DiscoverApiEndpoints
 
 		// Act / Assert
 		_ = FluentActions.Invoking(() => generator.DiscoverApiEndpoints(compilation)).Should()
-			.Throw<InvalidOperationException>("multiple HTTP attributes are not supported").WithMessage("Multiple HTTP attributes found on action");
+			.Throw<InvalidOperationException>("multiple HTTP attributes are not supported")
+			.WithMessage("Controller actions with multiple HTTP attributes are not supported.");
 	}
 }

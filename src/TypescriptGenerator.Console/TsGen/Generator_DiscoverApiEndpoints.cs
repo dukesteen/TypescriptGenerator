@@ -4,17 +4,17 @@ using Asp.Versioning;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Logging;
 
 using TypescriptGenerator.Console.TsGen.Types;
 
 using ApiVersion = Asp.Versioning.ApiVersion;
-using HttpMethod = TypescriptGenerator.Console.TsGen.Types.HttpMethod;
 
 namespace TypescriptGenerator.Console.TsGen;
 
 internal partial class Generator
 {
-	internal static List<ApiEndpointDescriptor> DiscoverApiEndpoints(Compilation compilation)
+	internal List<ApiEndpointDescriptor> DiscoverApiEndpoints(Compilation compilation)
 	{
 		var endpointActions = compilation.SyntaxTrees
 			.SelectMany(x => x.GetRoot().DescendantNodes())
@@ -33,27 +33,30 @@ internal partial class Generator
 
 			var httpAttributes = GetHttpAttributes(methodSymbol);
 			if (httpAttributes.Count > 1)
-				throw new InvalidOperationException("Multiple HTTP attributes found");
+				throw new InvalidOperationException("Multiple HTTP attributes found on action");
 
 			var httpattribute = httpAttributes.FirstOrDefault()!;
 
 			var httpMethod = GetHttpMethodFromAttributeData(httpattribute);
 			var relativePath = GetRelativePathFromEndpointAction(methodSymbol, httpattribute);
 			endpoints.Add(new ApiEndpointDescriptor(methodSymbol, httpMethod, relativePath));
+
+			logger.LogDebug("Discovered {HttpMethod} endpoint with action name {ActionName} and relative path {RelativePath}", httpMethod.ToString(),
+				methodSymbol.Name, relativePath);
 		}
 
 		return endpoints;
 	}
 
-	private static HttpMethod GetHttpMethodFromAttributeData(AttributeData attribute)
+	private static EndpointHttpMethod GetHttpMethodFromAttributeData(AttributeData attribute)
 	{
 		return attribute.AttributeClass?.Name switch
 		{
-			"HttpGetAttribute" => HttpMethod.Get,
-			"HttpPostAttribute" => HttpMethod.Post,
-			"HttpPutAttribute" => HttpMethod.Put,
-			"HttpDeleteAttribute" => HttpMethod.Delete,
-			"HttpPatchAttribute" => HttpMethod.Patch,
+			"HttpGetAttribute" => EndpointHttpMethod.Get,
+			"HttpPostAttribute" => EndpointHttpMethod.Post,
+			"HttpPutAttribute" => EndpointHttpMethod.Put,
+			"HttpDeleteAttribute" => EndpointHttpMethod.Delete,
+			"HttpPatchAttribute" => EndpointHttpMethod.Patch,
 			_ => throw new InvalidOperationException("Failed to find HTTP method"),
 		};
 	}
@@ -70,7 +73,7 @@ internal partial class Generator
 	{
 		var controllerRouteAttributes = endpointAction.ContainingType.GetAttributes().Where(x => x.AttributeClass?.Name == "RouteAttribute").ToList();
 		if (controllerRouteAttributes.Count > 1)
-			throw new InvalidOperationException("Multiple Route attributes found");
+			throw new InvalidOperationException("Multiple Route attributes found on controller");
 
 		var controllerRouteAttribute = controllerRouteAttributes.FirstOrDefault();
 		var controllerRouteString = controllerRouteAttribute?.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? "";
@@ -88,13 +91,13 @@ internal partial class Generator
 		var versionAttributes = endpointAction.GetAttributes().Where(x => x.AttributeClass?.Name == "ApiVersionAttribute").ToList();
 
 		if (versionAttributes.Count > 1)
-			throw new InvalidOperationException("Multiple ApiVersion attributes found");
+			throw new InvalidOperationException("Multiple ApiVersion attributes found on action");
 
 		if (versionAttributes.Count == 0)
 		{
 			versionAttributes = endpointAction.ContainingType.GetAttributes().Where(x => x.AttributeClass?.Name == "ApiVersionAttribute").ToList();
 			if (versionAttributes.Count > 1)
-				throw new InvalidOperationException("Multiple ApiVersion attributes found");
+				throw new InvalidOperationException("Multiple ApiVersion attributes found on controller");
 		}
 
 		var versionAttribute = versionAttributes.FirstOrDefault();
@@ -109,9 +112,9 @@ internal partial class Generator
 				if (ApiVersionParser.Default.TryParse(versionString, out var apiVersionFromString))
 					apiVersion = apiVersionFromString;
 			}
-			else
+			else if (version is double doubleVersion)
 			{
-				apiVersion = version as ApiVersion ?? throw new InvalidOperationException("Failed to parse ApiVersion");
+				apiVersion = new ApiVersion(doubleVersion);
 			}
 
 			// TODO: Support multiple version formats

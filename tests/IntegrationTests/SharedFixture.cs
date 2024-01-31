@@ -1,3 +1,4 @@
+using Microsoft.Build.Locator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +14,8 @@ public class SharedFixture : IAsyncLifetime
 
 	public Task InitializeAsync()
 	{
+		_ = MSBuildLocator.RegisterDefaults();
+
 		var serviceCollectionBuilder =
 			new ServiceCollection()
 				.AddSingleton<Generator>()

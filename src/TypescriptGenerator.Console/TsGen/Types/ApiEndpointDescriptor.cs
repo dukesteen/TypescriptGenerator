@@ -4,11 +4,11 @@ namespace TypescriptGenerator.Console.TsGen.Types;
 
 public record ApiEndpointDescriptor(
 	IMethodSymbol Action,
-	HttpMethod HttpMethod,
+	EndpointHttpMethod EndpointHttpMethod,
 	string RelativePath
 );
 
-public enum HttpMethod
+public enum EndpointHttpMethod
 {
 	Get,
 	Post,

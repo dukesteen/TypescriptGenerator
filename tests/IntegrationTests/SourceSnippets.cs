@@ -21,14 +21,16 @@ using NodaTime;
 	                                           public static class TodoCommands
 	                                           {
 	                                           		public record CreateTodoCommand(
-	                                           			[property: FromRoute(Name = "taskGroup")] string TaskGroup,
 	                                           			[property: FromQuery(Name = "done")] bool Done,
 	                                           			[property: FromBody] CommandBody Body);
 	                                           
 	                                           		public record CommandBody(string Title, string Description, Location Location);
 	                                           
-	                                           		public record ModifyTodoLocationCommand([property: FromRoute(Name = "id")] int Id, [property: FromBody] Location Location);
-	                                           		public record GetTodoQuery([property: FromRoute(Name = "id")] int Id);
+	                                           		public record ModifyTodoLocationCommand([property: FromRoute(Name = "todoId")] int Id, [property: FromBody] Location Location);
+	                                           		public record GetTodoQuery([property: FromRoute(Name = "todoId")] int Id);
+	                                           		public record DeleteTodoCommand([property: FromRoute(Name = "todoId")] int Id);
+	                                           		public record DeleteTodoCommandResponse(bool Success);
+	                                           		public record GetTodosQuery([property: FromQuery(Name = "page")] int Page, [property: FromQuery(Name = "pageSize")] int PageSize);
 	                                           }
 	                                           
 	                                           public record Location(int Longitude, int Latitude, LocationType LocationType);

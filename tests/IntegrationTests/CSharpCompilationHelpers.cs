@@ -1,4 +1,3 @@
-using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -9,7 +8,6 @@ public static class CSharpCompilationHelpers
 {
 	public static async ValueTask<Compilation> CreateCompilationAsync(string source)
 	{
-		_ = MSBuildLocator.RegisterDefaults();
 		using var workspace = MSBuildWorkspace.Create();
 		// workspace.LoadMetadataForReferencedProjects = true;
 

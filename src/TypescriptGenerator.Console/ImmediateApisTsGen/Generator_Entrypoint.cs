@@ -2,16 +2,22 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.Extensions.Logging;
 
-namespace TypescriptGenerator.Console.TsGen;
+using TypescriptGenerator.Console.ImmediateApisTsGen.Templates;
+using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
-internal partial class Generator(ILogger<Generator> logger)
+namespace TypescriptGenerator.Console.ImmediateApisTsGen;
+
+internal partial class Generator(ILogger<Generator> logger, GeneratorConfig config)
 {
-	public async ValueTask Execute(string csprojPath)
+	private List<EndpointDescriptor> EndpointDescriptors { get; set; } = [];
+	private List<TypeDescriptor> TypeDescriptors { get; set; } = [];
+
+	public async ValueTask Execute()
 	{
 		using var workspace = MSBuildWorkspace.Create();
 		workspace.LoadMetadataForReferencedProjects = true;
 
-		var project = await workspace.OpenProjectAsync(csprojPath);
+		var project = await workspace.OpenProjectAsync(config.CsprojPath);
 		var compilation = await project.GetCompilationAsync() ?? throw new InvalidOperationException("Failed to get compilation");
 
 		var errorDiagnostics = compilation.GetDiagnostics().Where(x => x.WarningLevel == 0).ToList();
@@ -36,7 +42,22 @@ internal partial class Generator(ILogger<Generator> logger)
 	{
 		logger.LogInformation("Starting TypeScript generator");
 		logger.LogInformation("Compilation: {Compilation}", compilation.AssemblyName);
-		_ = DiscoverApiEndpoints(compilation);
-		await Task.Run(() => { });
+		EndpointDescriptors = DiscoverApiEndpoints(compilation);
+		TypeDescriptors = DiscoverGeneratableTypes();
+		var types = GenerateTypes();
+		var endpoints = GenerateEndpoints();
+
+		var apiClientTemplate = Utility.ApiClientTemplate;
+		var apiClient = await apiClientTemplate.RenderAsync(new
+		{
+			ApiClientName = config.TsApiClientName,
+			ApiClientImportPath = config.TsApiClientPath,
+			Types = types,
+			Endpoints = endpoints,
+		});
+
+		await File.WriteAllTextAsync(config.OutputPath, apiClient);
+
+		logger.LogInformation("TypeScript generator completed");
 	}
 }

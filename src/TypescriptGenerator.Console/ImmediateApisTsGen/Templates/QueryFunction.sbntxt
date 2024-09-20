@@ -1,0 +1,8 @@
+export function {{ query_name }}({{ if data_type }}request: MaybeRef<{{ data_type }}>{{ end }}) {
+	return useQuery({
+		queryKey: ["{{ request_url }}"{{ if data_type }}, { request }{{ end }}],
+		queryFn: () => {{ fetcher_function_name }}({{ if data_type }}unref(request){{ end }}),
+		staleTime: {{ stale_time }},
+		retry: true
+	})
+}

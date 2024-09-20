@@ -32,6 +32,9 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="config.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -42,6 +45,7 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces"/>
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild"/>
 		<PackageReference Include="MinVer" PrivateAssets="all"/>
+		<PackageReference Include="Scriban" />
 		<PackageReference Include="Serilog"/>
 		<PackageReference Include="Serilog.Extensions.Logging"/>
 		<PackageReference Include="Serilog.Settings.Configuration"/>
@@ -53,4 +57,9 @@
 		<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
 		<MinVerTagPrefix>v</MinVerTagPrefix>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="ImmediateApisTsGen/Templates/*.sbntxt" />
+		<EmbeddedResource Include="ImmediateApisTsGen/Templates/*.sbntxt" Kind="Text" />
+	</ItemGroup>
 </Project>

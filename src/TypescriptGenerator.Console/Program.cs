@@ -1,4 +1,6 @@
-﻿using Cocona;
+﻿using System.Text.Json;
+
+using Cocona;
 
 using Microsoft.Build.Locator;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +9,9 @@ using Microsoft.Extensions.Logging;
 
 using Serilog;
 
-using TypescriptGenerator.Console.TsGen;
+using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
+
+using Generator = TypescriptGenerator.Console.ImmediateApisTsGen.Generator;
 
 MSBuildLocator.RegisterDefaults();
 
@@ -24,10 +28,24 @@ Log.Logger = loggerConfiguration;
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(loggerConfiguration);
 
-builder.Services.AddSingleton<Generator>();
-
 var app = builder.Build();
 
-app.AddCommand("generate", async (string csprojPath, [FromService] Generator generator) => await generator.Execute(csprojPath));
+app.AddCommand("generate", async (
+	string configPath,
+	[FromService] ILogger<Generator> logger,
+	[FromService] IServiceProvider serviceProvider) =>
+{
+	var configText = await File.ReadAllTextAsync(configPath);
+	var config = JsonSerializer.Deserialize<GeneratorConfig>(configText);
+
+	if (config == null)
+	{
+		logger.LogError("Failed to deserialize config");
+		return;
+	}
+
+	var generator = ActivatorUtilities.CreateInstance<Generator>(serviceProvider, config);
+	await generator.Execute();
+});
 
 app.Run();

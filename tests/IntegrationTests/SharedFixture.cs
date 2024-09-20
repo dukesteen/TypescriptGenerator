@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 using Serilog;
 
-using TypescriptGenerator.Console.TsGen;
+using Generator = TypescriptGenerator.Console.ImmediateApisTsGen.Generator;
 
 namespace IntegrationTests;
 

@@ -1,7 +1,5 @@
 using Microsoft.CodeAnalysis;
 
-using TypescriptGenerator.Console.TsGen.Types;
-
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
 public record EndpointDescriptor

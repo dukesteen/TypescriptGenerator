@@ -5,7 +5,6 @@ using TypescriptGenerator.Console.ImmediateApisTsGen.Extensions;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Helpers;
 using TypescriptGenerator.Console.ImmediateApisTsGen.SyntaxWalkers;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
-using TypescriptGenerator.Console.TsGen.Types;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen;
 

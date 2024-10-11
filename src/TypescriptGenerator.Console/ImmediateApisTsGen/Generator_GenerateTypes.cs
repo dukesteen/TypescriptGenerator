@@ -39,9 +39,9 @@ internal partial class Generator
 
 				stringBuilder.AppendLine(schemaBuilder.Build());
 				if (typeDescriptor.TypeUsage == TypeUsage.Request)
-					stringBuilder.AppendLine($"type {typeDescriptor.Name} = v.InferInput<typeof {typeDescriptor.SchemaName}>");
+					stringBuilder.AppendLine($"export type {typeDescriptor.Name} = v.InferInput<typeof {typeDescriptor.SchemaName}>");
 				else
-					stringBuilder.AppendLine($"type {typeDescriptor.Name} = v.InferOutput<typeof {typeDescriptor.SchemaName}>");
+					stringBuilder.AppendLine($"export type {typeDescriptor.Name} = v.InferOutput<typeof {typeDescriptor.SchemaName}>");
 
 				var schemaParseFunctionTemplate = Utility.SchemaParseFunctionTemplate;
 				var schemaParseFunction = schemaParseFunctionTemplate.Render(new

@@ -5,6 +5,7 @@ export function {{ fetcher_function_name }}({{ if data_type }}data: {{ data_type
 	{{~ end ~}}
 	return apiClient
 		.{{ api_call }}
+		.then((response) => response.data)
 		.then((response) => {{ if return_type }}{{ if is_list }}response.map((item) => {{ output_schema_parse_function_name }}(item)){{ else }}{{ output_schema_parse_function_name }}(response){{ end }}{{ else }}response{{ end }})
 		.catch(() => [])
 }

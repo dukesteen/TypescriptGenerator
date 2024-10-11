@@ -15,7 +15,7 @@ public class ValibotEnumSchemaBuilder(string enumName, string enumSchemaName)
 	public string Build()
 	{
 		var stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"enum {enumName} {{");
+		stringBuilder.AppendLine($"export enum {enumName} {{");
 
 		foreach (var member in Members)
 		{

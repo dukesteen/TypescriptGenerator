@@ -1,7 +1,5 @@
 using System.Reflection;
 
-using Microsoft.CodeAnalysis;
-
 using Scriban;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Templates;
@@ -21,15 +19,8 @@ public static class Utility
 		return Template.Parse(reader.ReadToEnd());
 	}
 
-	public static IncrementalValuesProvider<T> WhereNotNull<T>(
-		this IncrementalValuesProvider<T?> provider
-	) where T : struct =>
-		provider
-			.Where(x => x != null)
-			.Select((x, _) => x!.Value);
-
-	public static Template ApiClientTemplate => GetScribanTemplate("ApiClient");
-	public static Template SchemaParseFunctionTemplate => GetScribanTemplate("SchemaParseFunction");
-	public static Template FetcherFunctionTemplate => GetScribanTemplate("FetcherFunction");
-	public static Template QueryFunctionTemplate => GetScribanTemplate("QueryFunction");
+	public static Template ApiClientTemplate { get; } = GetScribanTemplate("ApiClient");
+	public static Template SchemaParseFunctionTemplate { get; } = GetScribanTemplate("SchemaParseFunction");
+	public static Template FetcherFunctionTemplate { get; } = GetScribanTemplate("FetcherFunction");
+	public static Template QueryFunctionTemplate { get; } = GetScribanTemplate("QueryFunction");
 }

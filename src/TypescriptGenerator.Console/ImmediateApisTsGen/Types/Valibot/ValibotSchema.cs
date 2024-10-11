@@ -15,7 +15,7 @@ public record ValibotSchema
 
 	public static ValibotSchema Array(ValibotSchema schema) => new() { Name = "array", IsValibotMethod = true, Members = [schema] };
 	public static ValibotSchema Map(ValibotSchema keyType, ValibotSchema valueType) => new() { Name = "map", IsValibotMethod = true, Members = [keyType, valueType] };
-	public static ValibotSchema Optional(ValibotSchema schema) => new() { Name = "optional", IsValibotMethod = true, Members = [schema] };
+	public static ValibotSchema Optional(ValibotSchema schema) => new() { Name = "nullable", IsValibotMethod = true, Members = [schema] };
 	public static ValibotSchema Pipe(ValibotSchema schema1, ValibotSchema schema2) => new() { Name = "pipe", IsValibotMethod = true, Members = [schema1, schema2] };
 	public static ValibotSchema Pipe(ValibotSchema schema1, ValibotSchema schema2, ValibotSchema schema3) => new() { Name = "pipe", IsValibotMethod = true, Members = [schema1, schema2, schema3] };
 	public static ValibotSchema Pipe(ValibotSchema schema1, ValibotSchema schema2, ValibotSchema schema3, ValibotSchema schema4) => new() { Name = "pipe", IsValibotMethod = true, Members = [schema1, schema2, schema3, schema4] };

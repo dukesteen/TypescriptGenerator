@@ -12,7 +12,7 @@ internal partial class Generator(ILogger<Generator> logger, GeneratorConfig conf
 	private List<EndpointDescriptor> EndpointDescriptors { get; set; } = [];
 	private List<TypeDescriptor> TypeDescriptors { get; set; } = [];
 
-	public async ValueTask Execute()
+	public async ValueTask<int> Execute()
 	{
 		using var workspace = MSBuildWorkspace.Create();
 		workspace.LoadMetadataForReferencedProjects = true;
@@ -27,23 +27,24 @@ internal partial class Generator(ILogger<Generator> logger, GeneratorConfig conf
 			foreach (var errorDiagnostic in errorDiagnostics)
 				logger.LogError("{Message} @ {Location}", errorDiagnostic.GetMessage(), errorDiagnostic.Location.GetLineSpan());
 
-			return;
+			return 1;
 		}
 
-		await ExecuteInternal(compilation);
+		return await ExecuteInternal(compilation);
 	}
 
-	public async ValueTask Execute(Compilation compilation)
+	public async ValueTask<int> Execute(Compilation compilation)
 	{
-		await ExecuteInternal(compilation);
+		return await ExecuteInternal(compilation);
 	}
 
-	internal async ValueTask ExecuteInternal(Compilation compilation)
+	internal async ValueTask<int> ExecuteInternal(Compilation compilation)
 	{
 		logger.LogInformation("Starting TypeScript generator");
 		logger.LogInformation("Compilation: {Compilation}", compilation.AssemblyName);
 		EndpointDescriptors = DiscoverApiEndpoints(compilation);
 		TypeDescriptors = DiscoverGeneratableTypes();
+		var queryKeys = GenerateQueryKeys();
 		var types = GenerateTypes();
 		var endpoints = GenerateEndpoints();
 
@@ -52,6 +53,7 @@ internal partial class Generator(ILogger<Generator> logger, GeneratorConfig conf
 		{
 			ApiClientName = config.TsApiClientName,
 			ApiClientImportPath = config.TsApiClientPath,
+			QueryKeys = queryKeys,
 			Types = types,
 			Endpoints = endpoints,
 		});
@@ -59,5 +61,6 @@ internal partial class Generator(ILogger<Generator> logger, GeneratorConfig conf
 		await File.WriteAllTextAsync(config.OutputPath, apiClient);
 
 		logger.LogInformation("TypeScript generator completed");
+		return 0;
 	}
 }

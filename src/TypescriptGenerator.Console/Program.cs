@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 using Cocona;
 
@@ -41,11 +41,11 @@ app.AddCommand("generate", async (
 	if (config == null)
 	{
 		logger.LogError("Failed to deserialize config");
-		return;
+		return 2;
 	}
 
 	var generator = ActivatorUtilities.CreateInstance<Generator>(serviceProvider, config);
-	await generator.Execute();
+	return await generator.Execute();
 });
 
 app.Run();

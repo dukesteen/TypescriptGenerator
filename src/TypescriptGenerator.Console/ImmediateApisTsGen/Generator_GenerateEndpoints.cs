@@ -33,7 +33,7 @@ internal partial class Generator
 
 			var requestTypeDescriptor = endpointDescriptor.RequestType is not null ? TypeDescriptors.FirstOrDefault(x => x.FullyQualifiedName == endpointDescriptor.RequestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)) : null;
 
-			var fetcherFunctionName = endpointDescriptor.EndpointWrapperType.Name.ToCamelCase() + "Fetcher";
+			var fetcherFunctionName = endpointDescriptor.EndpointWrapperType.Name.ToCamelCase();
 			var requestDataTypeName = requestTypeDescriptor?.Name;
 			var returnTypeName = returnTypeDescriptor != null ? returnTypeDescriptor.Name + (isListLike ? "[]" : "") : null;
 			var inputSchemaParseFunctionName = "parse" + requestTypeDescriptor?.Name;
@@ -57,7 +57,7 @@ internal partial class Generator
 			{
 				QueryName = "use" + endpointDescriptor.EndpointWrapperType.Name,
 				FetcherFunctionName = fetcherFunctionName,
-				RequestUrl = endpointDescriptor.Path,
+				QueryKey = "queryKeys." + endpointDescriptor.EndpointWrapperType.Name,
 				DataType = requestDataTypeName,
 				StaleTime = 1000 * 60 * 5,
 			});

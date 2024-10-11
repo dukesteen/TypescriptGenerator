@@ -7,6 +7,8 @@ import { {{ api_client_name }} } from '{{ api_client_import_path }}'
 import { useQuery } from '@tanstack/vue-query'
 import { unref, type MaybeRef } from 'vue'
 
+{{ query_keys }}
+
 {{ types }}
 
 {{ endpoints }}

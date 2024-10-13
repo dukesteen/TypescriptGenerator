@@ -1,9 +1,0 @@
-{
-	"csprojPath": "/Users/duke/Dev/Personal/Timespace/src/Timespace.Api/Timespace.Api.csproj",
-	"generateTypesInNamespacesIncludes": [
-		"Timespace."
-	],
-	"tsApiClientName": "apiClient",
-	"tsApiClientPath": "@/infrastructure/api",
-	"outputPath": "/Users/duke/Dev/Personal/Timespace/frontend/src/features/_shared/api.ts"
-}

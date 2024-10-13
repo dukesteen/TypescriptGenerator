@@ -1,3 +1,4 @@
+using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Types.Valibot;
 
 namespace IntegrationTests.Tests;
@@ -11,10 +12,10 @@ public class ValibotSchemaTests
 		{
 			Name = "array",
 			IsValibotMethod = true,
-			Members =
+			Members = new List<ValibotSchema>(
 			[
 				new ValibotSchema { Name = "OtherSchema" },
-			],
+			]).ToEquatableReadOnlyList(),
 		};
 
 		Assert.Equal("v.array(OtherSchema)", schema.ToString());
@@ -38,14 +39,14 @@ public class ValibotSchemaTests
 	public void LocalDateRequestSchema_ShouldBeCorrect()
 	{
 		var schema = ValibotSchema.LocalDateRequest;
-		Assert.Equal("v.pipe(v.instance(Temporal.LocalDate), v.transform((input) => input.toString()))", schema.ToString());
+		Assert.Equal("v.pipe(v.instance(Temporal.PlainDate), v.transform((input) => input.toString()))", schema.ToString());
 	}
 
 	[Fact]
 	public void LocalDateResponseSchema_ShouldBeCorrect()
 	{
 		var schema = ValibotSchema.LocalDateResponse;
-		Assert.Equal("v.pipe(v.string(), v.transform((input) => Temporal.LocalDate.from(input)))", schema.ToString());
+		Assert.Equal("v.pipe(v.string(), v.transform((input) => Temporal.PlainDate.from(input)))", schema.ToString());
 	}
 
 	[Fact]
@@ -88,5 +89,11 @@ public class ValibotSchemaTests
 	{
 		var schema = ValibotSchema.Instance("SomeInstance");
 		Assert.Equal("v.instance(SomeInstance)", schema.ToString());
+	}
+
+	[Fact]
+	public void HelperMethod_IsEquatable()
+	{
+		Assert.Equal(ValibotSchema.InstantResponse, ValibotSchema.Pipe(ValibotSchema.StringSchema, ValibotSchema.Transform("(input) => Temporal.Instant.from(input)")));
 	}
 }

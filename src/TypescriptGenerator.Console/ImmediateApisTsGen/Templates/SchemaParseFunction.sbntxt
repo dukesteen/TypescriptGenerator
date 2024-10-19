@@ -1,0 +1,3 @@
+const {{ function_name }} = (data: {{ inferred_input }}): {{ inferred_output }} => {
+	return v.parse({{ schema_name }}, data)
+}

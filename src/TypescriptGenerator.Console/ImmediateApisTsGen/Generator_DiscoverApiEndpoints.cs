@@ -78,8 +78,15 @@ internal partial class Generator
 
 			var requestType = namedRequestType;
 
-			if (requestTypeSymbol.Name == "object")
-				requestType = null;
+			var requestTypeHasNoProperties = requestTypeSymbol.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract")
+				.Where(x => x.IsStatic == false).ToList()
+				.Count == 0;
+
+			if (requestTypeSymbol.Name == "object" ||
+			requestTypeHasNoProperties)
+			{
+				if (requestTypeHasNoProperties) requestType = requestTypeSymbol.BaseType ?? null;
+			}
 
 			endpointDescriptors.Add(new EndpointDescriptor
 			{

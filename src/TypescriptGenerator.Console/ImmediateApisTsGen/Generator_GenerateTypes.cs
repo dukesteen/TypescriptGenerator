@@ -15,11 +15,15 @@ internal partial class Generator
 	internal string GenerateTypes()
 	{
 		var stringBuilder = new StringBuilder();
+		var generatedEnumNames = new List<string>();
 
 		foreach (var typeDescriptor in TypeDescriptors)
 		{
 			if (typeDescriptor.TypeSymbol.TypeKind == TypeKind.Enum)
 			{
+				if (generatedEnumNames.Contains(typeDescriptor.SchemaName))
+					continue;
+
 				var fields = typeDescriptor.TypeSymbol.GetMembers().OfType<IFieldSymbol>();
 				var schemaBuilder = new ValibotEnumSchemaBuilder(typeDescriptor.Name, typeDescriptor.SchemaName);
 				foreach (var member in fields)
@@ -28,6 +32,8 @@ internal partial class Generator
 				}
 
 				stringBuilder.AppendLine(schemaBuilder.Build());
+
+				generatedEnumNames.Add(typeDescriptor.SchemaName);
 			}
 			else
 			{

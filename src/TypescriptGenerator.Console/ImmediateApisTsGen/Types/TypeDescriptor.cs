@@ -11,6 +11,8 @@ public record TypeDescriptor
 	public string SchemaName => Name + "Schema";
 	public required IReadOnlyList<PropertyDescriptor> Properties { get; init; }
 
+	public INamedTypeSymbol? InheritsFrom => TypeSymbol.BaseType;
+
 	private string GetTypeName(INamedTypeSymbol type)
 	{
 		var name = TypeSymbol.ContainingType == null ? TypeSymbol.Name : $"{TypeSymbol.ContainingType.Name}{TypeSymbol.Name}";

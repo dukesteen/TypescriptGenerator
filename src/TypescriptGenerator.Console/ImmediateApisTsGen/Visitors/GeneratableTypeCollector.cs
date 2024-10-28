@@ -11,6 +11,9 @@ internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsa
 
 	internal void CollectFrom(INamedTypeSymbol from)
 	{
+		if (from.BaseType is not null)
+			CollectFrom(from.BaseType);
+
 		if (from.IsCollection() || from.IsValueTaskT())
 		{
 			foreach (var typeArgument in from.TypeArguments)
@@ -44,7 +47,7 @@ internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsa
 
 	private List<PropertyDescriptor> GetPropertiesFromNamedTypeSymbol(INamedTypeSymbol type)
 	{
-		var properties = type.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract").ToList();
+		var properties = type.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract").Where(x => x.IsStatic == false).ToList();
 		foreach (var property in properties)
 		{
 			if (property.Type is INamedTypeSymbol propertyType)

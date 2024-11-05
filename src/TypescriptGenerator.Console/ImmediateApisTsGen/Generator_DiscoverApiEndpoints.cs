@@ -17,7 +17,7 @@ internal partial class Generator
 		{
 			var root = syntaxTree.GetRoot();
 			var semanticModel = compilation.GetSemanticModel(syntaxTree);
-			var classDeclarationCollector = new ClassDeclarationCollector(semanticModel);
+			var classDeclarationCollector = new EndpointDeclarationCollector(semanticModel);
 			classDeclarationCollector.Visit(root);
 			endpointClasses.AddRange(classDeclarationCollector.Handlers);
 		}

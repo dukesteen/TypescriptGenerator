@@ -33,7 +33,8 @@ public static class Constants
 		{"global::Microsoft.AspNetCore.Http.IFormFileCollection", ValibotSchema.Array(ValibotSchema.FileSchema)},
 		{"global::NodaTime.Instant", ValibotSchema.InstantRequest},
 		{"global::NodaTime.LocalDate", ValibotSchema.LocalDateRequest},
-		{"global::NodaTime.Period", ValibotSchema.DurationRequest},
+		{"global::NodaTime.Period", ValibotSchema.PeriodRequest},
+		{"global::NodaTime.Duration", ValibotSchema.DurationRequest},
 	};
 
 	public static readonly Dictionary<string, ValibotSchema> ResponseTypeMappings = new() {
@@ -56,6 +57,7 @@ public static class Constants
 		{"global::Microsoft.AspNetCore.Http.IFormFileCollection", ValibotSchema.Array(ValibotSchema.FileSchema)},
 		{"global::NodaTime.Instant", ValibotSchema.InstantResponse},
 		{"global::NodaTime.LocalDate", ValibotSchema.LocalDateResponse},
-		{"global::NodaTime.Period", ValibotSchema.DurationResponse},
+		{"global::NodaTime.Period", ValibotSchema.PeriodResponse},
+		{"global::NodaTime.Duration", ValibotSchema.DurationResponse},
 	};
 }

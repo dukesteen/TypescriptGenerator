@@ -52,14 +52,14 @@ public class ValibotSchemaTests
 	[Fact]
 	public void DurationRequestSchema_ShouldBeCorrect()
 	{
-		var schema = ValibotSchema.DurationRequest;
+		var schema = ValibotSchema.PeriodRequest;
 		Assert.Equal("v.pipe(v.instance(Temporal.Duration), v.transform((input) => input.toString()))", schema.ToString());
 	}
 
 	[Fact]
 	public void DurationResponseSchema_ShouldBeCorrect()
 	{
-		var schema = ValibotSchema.DurationResponse;
+		var schema = ValibotSchema.PeriodResponse;
 		Assert.Equal("v.pipe(v.string(), v.transform((input) => Temporal.Duration.from(input)))", schema.ToString());
 	}
 

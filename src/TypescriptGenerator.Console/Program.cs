@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 
 using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
+using TypescriptGenerator.Console.Policies;
 
 using Generator = TypescriptGenerator.Console.ImmediateApisTsGen.Generator;
 
@@ -44,8 +45,12 @@ app.AddCommand("generate", async (
 		return 2;
 	}
 
+	var policyGenerator = ActivatorUtilities.CreateInstance<PoliciesGenerator>(serviceProvider, config);
+	var result = await policyGenerator.Execute();
+
 	var generator = ActivatorUtilities.CreateInstance<Generator>(serviceProvider, config);
-	return await generator.Execute();
+	result = await generator.Execute();
+	return result;
 });
 
 app.Run();

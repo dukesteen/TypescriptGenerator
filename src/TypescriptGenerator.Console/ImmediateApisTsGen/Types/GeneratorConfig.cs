@@ -17,4 +17,7 @@ public class GeneratorConfig
 
 	[JsonPropertyName("outputPath")]
 	public required string OutputPath { get; init; }
+
+	[JsonPropertyName("policiesOutputPath")]
+	public required string PoliciesOutputPath { get; init; }
 }

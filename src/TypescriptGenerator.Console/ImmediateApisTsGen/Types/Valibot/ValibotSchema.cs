@@ -1,6 +1,6 @@
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types.Valibot;
 
-public record ValibotSchema
+internal record ValibotSchema
 {
 	public required string Name { get; init; }
 	public bool IsValibotMethod { get; init; }
@@ -8,9 +8,7 @@ public record ValibotSchema
 
 	public override string ToString()
 	{
-		if (IsValibotMethod)
-			return $"v.{Name}({string.Join(", ", Members.Select(x => x.ToString()).ToList())})";
-		return Name;
+		return IsValibotMethod ? $"v.{Name}({string.Join(", ", Members.Select(x => x.ToString()).ToList())})" : Name;
 	}
 
 	public static ValibotSchema Array(ValibotSchema schema) => new() { Name = "array", IsValibotMethod = true, Members = new List<ValibotSchema>([schema]).ToEquatableReadOnlyList() };
@@ -35,6 +33,9 @@ public record ValibotSchema
 
 	public static ValibotSchema StringSchema => new() { Name = "string", IsValibotMethod = true };
 	public static ValibotSchema NumberSchema => new() { Name = "number", IsValibotMethod = true };
+	public static ValibotSchema BigIntSchema => new() { Name = "bigint", IsValibotMethod = true };
+	public static ValibotSchema BigIntSchemaRequest => Pipe(BigIntSchema, Transform("(input) => input.toString()"));
+	public static ValibotSchema BigIntSchemaResponse => Pipe(StringSchema, Transform("(input) => BigInt(input)"));
 	public static ValibotSchema BooleanSchema => new() { Name = "boolean", IsValibotMethod = true };
 	public static ValibotSchema FileSchema => new() { Name = "file", IsValibotMethod = true };
 	public static ValibotSchema Instance(string name) => new() { Name = "instance", IsValibotMethod = true, Members = new List<ValibotSchema>([new ValibotSchema { Name = name }]).ToEquatableReadOnlyList() };

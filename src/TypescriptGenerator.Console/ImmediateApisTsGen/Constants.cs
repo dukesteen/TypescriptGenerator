@@ -2,7 +2,7 @@ using TypescriptGenerator.Console.ImmediateApisTsGen.Types.Valibot;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen;
 
-public static class Constants
+internal static class Constants
 {
 	public static readonly IReadOnlyList<string> EndpointAttributes =
 	[
@@ -16,7 +16,7 @@ public static class Constants
 	public static readonly Dictionary<string, ValibotSchema> RequestTypeMappings = new() {
 		{"string", ValibotSchema.StringSchema},
 		{"int", ValibotSchema.NumberSchema},
-		{"long", ValibotSchema.NumberSchema},
+		{"long", ValibotSchema.BigIntSchemaRequest},
 		{"double", ValibotSchema.NumberSchema},
 		{"float", ValibotSchema.NumberSchema},
 		{"decimal", ValibotSchema.NumberSchema},
@@ -40,7 +40,7 @@ public static class Constants
 	public static readonly Dictionary<string, ValibotSchema> ResponseTypeMappings = new() {
 		{"string", ValibotSchema.StringSchema},
 		{"int", ValibotSchema.NumberSchema},
-		{"long", ValibotSchema.NumberSchema},
+		{"long", ValibotSchema.BigIntSchemaResponse},
 		{"double", ValibotSchema.NumberSchema},
 		{"float", ValibotSchema.NumberSchema},
 		{"decimal", ValibotSchema.NumberSchema},

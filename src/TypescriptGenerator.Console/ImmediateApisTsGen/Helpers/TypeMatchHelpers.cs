@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Helpers;
 
-public static class TypeMatchHelpers
+internal static class TypeMatchHelpers
 {
 	internal static bool IsCollection(this INamedTypeSymbol type)
 	{

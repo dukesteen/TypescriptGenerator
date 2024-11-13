@@ -62,8 +62,8 @@ internal partial class Generator
 				StaleTime = 1000 * 60 * 5,
 			});
 
-			stringBuilder.AppendLine(fetcherFunction);
-			stringBuilder.AppendLine(queryFunction);
+			_ = stringBuilder.AppendLine(fetcherFunction);
+			_ = stringBuilder.AppendLine(queryFunction);
 		}
 
 		return stringBuilder.ToString();
@@ -105,16 +105,15 @@ internal partial class Generator
 				logger.LogError("Multiple body parameters are not supported for endpoint {EndpointName}", endpointDescriptor.EndpointWrapperType.Name);
 				throw new InvalidOperationException("Multiple body parameters are not supported");
 			}
-			if (bodyParams.Count == 1)
-				return parameters.Count == 1
+			return bodyParams.Count == 1
+				? parameters.Count == 1
 					? $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, parsedData)"
-					: $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, parsedData.{bodyParams.First().PropertyPath})";
-			if (formParams.Count > 0)
-				return parameters.Count == 1
+					: $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, parsedData.{bodyParams.First().PropertyPath})"
+				: formParams.Count > 0
+				? parameters.Count == 1
 					? $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}Form{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, parsedData)"
-					: $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}Form{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, {{ {string.Join(", ", formParams.Select(x => $"{x.Name.ToCamelCase()}: parsedData.{x.PropertyPath}"))} }})";
-
-			return $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, parsedData)";
+					: $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}Form{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, {{ {string.Join(", ", formParams.Select(x => $"{x.Name.ToCamelCase()}: parsedData.{x.PropertyPath}"))} }})"
+				: $"{endpointDescriptor.HttpMethod.ToString().ToLowerInvariant()}{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`, parsedData)";
 		}
 
 		if (endpointDescriptor.HttpMethod is EndpointHttpMethod.Delete)

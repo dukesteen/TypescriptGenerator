@@ -1,6 +1,6 @@
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
-public class EndpointParameterDescriptor
+internal class EndpointParameterDescriptor
 {
 	public required string Name { get; set; }
 	public string? RouteParamName { get; set; }
@@ -8,7 +8,7 @@ public class EndpointParameterDescriptor
 	public ParameterType ParameterType { get; set; }
 }
 
-public enum ParameterType
+internal enum ParameterType
 {
 	Body,
 	Query,

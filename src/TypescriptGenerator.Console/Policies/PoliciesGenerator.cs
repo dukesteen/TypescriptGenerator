@@ -10,7 +10,7 @@ using TypescriptGenerator.Console.Policies.SyntaxWalkers;
 
 namespace TypescriptGenerator.Console.Policies;
 
-public class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorConfig config)
+internal class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorConfig config)
 {
 	public async ValueTask<int> Execute()
 	{
@@ -55,16 +55,16 @@ public class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorConfi
 		policies = policies.Distinct(SymbolEqualityComparer.Default).OfType<INamedTypeSymbol>().ToList();
 
 		var policyBuilder = new StringBuilder();
-		policyBuilder.AppendLine("export const policies = {");
+		_ = policyBuilder.AppendLine("export const policies = {");
 
 		foreach (var policy in policies)
 		{
 			var policyNameProp = policy.GetMembers().OfType<IFieldSymbol>().FirstOrDefault(x => x.Name == "PolicyName");
 
-			policyBuilder.AppendLine($"    {policy.Name.ToCamelCase()}: \"{policyNameProp?.ConstantValue?.ToString()}\",");
+			_ = policyBuilder.AppendLine($"    {policy.Name.ToCamelCase()}: \"{policyNameProp?.ConstantValue?.ToString()}\",");
 		}
 
-		policyBuilder.AppendLine("};");
+		_ = policyBuilder.AppendLine("};");
 
 		await File.WriteAllTextAsync(config.PoliciesOutputPath, policyBuilder.ToString());
 

@@ -28,10 +28,10 @@ internal partial class Generator
 				var schemaBuilder = new ValibotEnumSchemaBuilder(typeDescriptor.Name, typeDescriptor.SchemaName);
 				foreach (var member in fields)
 				{
-					schemaBuilder.WithMember(member.Name, (int)member.ConstantValue!);
+					_ = schemaBuilder.WithMember(member.Name, (int)member.ConstantValue!);
 				}
 
-				stringBuilder.AppendLine(schemaBuilder.Build());
+				_ = stringBuilder.AppendLine(schemaBuilder.Build());
 
 				generatedEnumNames.Add(typeDescriptor.SchemaName);
 			}
@@ -40,14 +40,13 @@ internal partial class Generator
 				var schemaBuilder = new ValibotObjectSchemaBuilder(typeDescriptor.SchemaName);
 				foreach (var property in typeDescriptor.Properties)
 				{
-					schemaBuilder.WithProperty(property.ValibotPropertyName, GetValibotSchemaFromType(property.PropertyType, typeDescriptor.TypeUsage));
+					_ = schemaBuilder.WithProperty(property.ValibotPropertyName, GetValibotSchemaFromType(property.PropertyType, typeDescriptor.TypeUsage));
 				}
 
-				stringBuilder.AppendLine(schemaBuilder.Build());
-				if (typeDescriptor.TypeUsage == TypeUsage.Request)
-					stringBuilder.AppendLine($"export type {typeDescriptor.Name} = v.InferInput<typeof {typeDescriptor.SchemaName}>");
-				else
-					stringBuilder.AppendLine($"export type {typeDescriptor.Name} = v.InferOutput<typeof {typeDescriptor.SchemaName}>");
+				_ = stringBuilder.AppendLine(schemaBuilder.Build());
+				_ = typeDescriptor.TypeUsage == TypeUsage.Request
+					? stringBuilder.AppendLine($"export type {typeDescriptor.Name} = v.InferInput<typeof {typeDescriptor.SchemaName}>")
+					: stringBuilder.AppendLine($"export type {typeDescriptor.Name} = v.InferOutput<typeof {typeDescriptor.SchemaName}>");
 
 				var schemaParseFunctionTemplate = Utility.SchemaParseFunctionTemplate;
 				var schemaParseFunction = schemaParseFunctionTemplate.Render(new
@@ -58,8 +57,8 @@ internal partial class Generator
 					typeDescriptor.SchemaName,
 				});
 
-				stringBuilder.AppendLine();
-				stringBuilder.AppendLine(schemaParseFunction);
+				_ = stringBuilder.AppendLine();
+				_ = stringBuilder.AppendLine(schemaParseFunction);
 			}
 		}
 
@@ -112,9 +111,8 @@ internal partial class Generator
 			}
 		}
 
-		if (TypeDescriptors.Any(x => x.FullyQualifiedName == typeDisplayString))
-			return ValibotSchema.Ref(TypeDescriptors.First(x => x.FullyQualifiedName == typeDisplayString).SchemaName);
-
-		throw new InvalidOperationException($"Cannot generate schema for type {typeDisplayString}");
+		return TypeDescriptors.Any(x => x.FullyQualifiedName == typeDisplayString)
+			? ValibotSchema.Ref(TypeDescriptors.First(x => x.FullyQualifiedName == typeDisplayString).SchemaName)
+			: throw new InvalidOperationException($"Cannot generate schema for type {typeDisplayString}");
 	}
 }

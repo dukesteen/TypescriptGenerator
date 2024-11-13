@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.SyntaxWalkers;
 
-public class EndpointDeclarationCollector(SemanticModel model) : CSharpSyntaxWalker
+internal class EndpointDeclarationCollector(SemanticModel model) : CSharpSyntaxWalker
 {
 	public IList<INamedTypeSymbol> Handlers { get; } = [];
 

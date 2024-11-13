@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TypescriptGenerator.Console.Policies.SyntaxWalkers;
 
-public class PolicyDeclarationController(SemanticModel model) : CSharpSyntaxWalker
+internal class PolicyDeclarationController(SemanticModel model) : CSharpSyntaxWalker
 {
 	public IList<INamedTypeSymbol> PolicyDeclarations { get; } = [];
 

@@ -2,7 +2,7 @@ using System.Text;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Builders;
 
-public class TypescriptObjectBuilder(string name)
+internal class TypescriptObjectBuilder(string name)
 {
 	private Dictionary<string, string> Members { get; } = [];
 
@@ -15,14 +15,14 @@ public class TypescriptObjectBuilder(string name)
 	public string Build()
 	{
 		var stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"export const {name} = {{");
+		_ = stringBuilder.AppendLine($"export const {name} = {{");
 
 		foreach (var member in Members)
 		{
-			stringBuilder.AppendLine($"    {member.Key}: '{member.Value}',");
+			_ = stringBuilder.AppendLine($"    {member.Key}: '{member.Value}',");
 		}
 
-		stringBuilder.Append('}');
+		_ = stringBuilder.Append('}');
 		return stringBuilder.ToString();
 	}
 }

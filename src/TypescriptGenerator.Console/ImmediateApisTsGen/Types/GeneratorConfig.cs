@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
-public class GeneratorConfig
+internal class GeneratorConfig
 {
 	[JsonPropertyName("csprojPath")] public required string CsprojPath { get; init; }
 

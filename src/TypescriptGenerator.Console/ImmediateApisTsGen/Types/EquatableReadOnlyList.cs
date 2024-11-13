@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
 [ExcludeFromCodeCoverage]
-public static class EquatableReadOnlyList
+internal static class EquatableReadOnlyList
 {
 	public static EquatableReadOnlyList<T> ToEquatableReadOnlyList<T>(this IEnumerable<T> enumerable)
 		=> new(enumerable.ToArray());
@@ -14,7 +14,7 @@ public static class EquatableReadOnlyList
 ///     A wrapper for IReadOnlyList that provides value equality support for the wrapped list.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public readonly struct EquatableReadOnlyList<T>(
+internal readonly struct EquatableReadOnlyList<T>(
 	IReadOnlyList<T>? collection
 ) : IEquatable<EquatableReadOnlyList<T>>, IReadOnlyList<T>
 {

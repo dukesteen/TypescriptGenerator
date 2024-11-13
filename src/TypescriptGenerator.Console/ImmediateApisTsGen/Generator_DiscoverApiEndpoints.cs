@@ -79,7 +79,7 @@ internal partial class Generator
 			var requestType = namedRequestType;
 
 			var requestTypeHasNoProperties = requestTypeSymbol.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract")
-				.Where(x => x.IsStatic == false).ToList()
+				.Where(x => !x.IsStatic).ToList()
 				.Count == 0;
 
 			if (requestTypeSymbol.Name == "object" ||
@@ -127,12 +127,10 @@ internal partial class Generator
 		if (parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Mvc.FromQueryAttribute"))
 			return RequestTypeBindingOptions.Query;
 
-		if (parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Mvc.FromFormAttribute"))
-			return RequestTypeBindingOptions.Form;
-
-		if (parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Http.AsParametersAttribute"))
-			return RequestTypeBindingOptions.Parameters;
-
-		return RequestTypeBindingOptions.None;
+		return parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Mvc.FromFormAttribute")
+			? RequestTypeBindingOptions.Form
+			: parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Http.AsParametersAttribute")
+			? RequestTypeBindingOptions.Parameters
+			: RequestTypeBindingOptions.None;
 	}
 }

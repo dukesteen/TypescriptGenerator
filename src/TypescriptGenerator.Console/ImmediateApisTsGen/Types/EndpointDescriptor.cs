@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
-public record EndpointDescriptor
+internal record EndpointDescriptor
 {
 	public required string Path { get; init; }
 	public required EndpointHttpMethod HttpMethod { get; init; }
@@ -12,7 +12,7 @@ public record EndpointDescriptor
 	public required RequestTypeBindingOptions RequestTypeBoundAs { get; init; } = RequestTypeBindingOptions.None;
 }
 
-public enum RequestTypeBindingOptions
+internal enum RequestTypeBindingOptions
 {
 	None,
 	Query,
@@ -21,7 +21,7 @@ public enum RequestTypeBindingOptions
 	Parameters,
 }
 
-public enum EndpointHttpMethod
+internal enum EndpointHttpMethod
 {
 	Get,
 	Post,

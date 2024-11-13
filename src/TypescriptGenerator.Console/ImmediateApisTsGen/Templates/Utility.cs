@@ -4,7 +4,7 @@ using Scriban;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Templates;
 
-public static class Utility
+internal static class Utility
 {
 	private static Template GetScribanTemplate(string templateName)
 	{

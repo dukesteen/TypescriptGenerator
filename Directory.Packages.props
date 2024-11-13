@@ -3,7 +3,7 @@
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageVersion Include="Asp.Versioning.Abstractions" Version="8.0.0"/>
+		<PackageVersion Include="Asp.Versioning.Abstractions" Version="8.1.0"/>
 		<PackageVersion Include="Asp.Versioning.Http" Version="8.0.0"/>
 		<PackageVersion Include="Cocona" Version="2.2.0"/>
 		<PackageVersion Include="coverlet.collector" Version="6.0.0"/>
@@ -12,20 +12,20 @@
 		<PackageVersion Include="GitHubActionsTestLogger" Version="2.3.3"/>
 		<PackageVersion Include="Immediate.Apis" Version="1.2.0"/>
 		<PackageVersion Include="Immediate.Handlers" Version="1.6.1"/>
-		<PackageVersion Include="Microsoft.Build.Locator" Version="1.6.10"/>
-		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.0-2.final"/>
-		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.0-2.final"/>
-		<PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.9.0-2.final"/>
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
-		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0"/>
-		<PackageVersion Include="MinVer" Version="4.3.0"/>
+		<PackageVersion Include="Microsoft.Build.Locator" Version="1.7.8"/>
+		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0"/>
+		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0"/>
+		<PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.11.0"/>
+		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
+		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0"/>
+		<PackageVersion Include="MinVer" Version="6.0.0"/>
 		<PackageVersion Include="NodaTime" Version="3.1.10"/>
 		<PackageVersion Include="PolySharp" Version="1.14.1"/>
-		<PackageVersion Include="Scriban" Version="5.9.1"/>
-		<PackageVersion Include="Serilog" Version="3.1.1"/>
+		<PackageVersion Include="Scriban" Version="5.11.0"/>
+		<PackageVersion Include="Serilog" Version="4.1.0"/>
 		<PackageVersion Include="Serilog.Extensions.Logging" Version="8.0.0"/>
-		<PackageVersion Include="Serilog.Settings.Configuration" Version="8.0.0"/>
-		<PackageVersion Include="Serilog.Sinks.Console" Version="5.0.1"/>
+		<PackageVersion Include="Serilog.Settings.Configuration" Version="8.0.4"/>
+		<PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0"/>
 		<PackageVersion Include="Verify.Xunit" Version="22.11.5"/>
 		<PackageVersion Include="xunit" Version="2.6.6"/>
 		<PackageVersion Include="xunit.runner.visualstudio" Version="2.5.6"/>

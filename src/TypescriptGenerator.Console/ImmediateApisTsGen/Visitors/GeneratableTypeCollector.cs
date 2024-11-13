@@ -47,7 +47,7 @@ internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsa
 
 	private List<PropertyDescriptor> GetPropertiesFromNamedTypeSymbol(INamedTypeSymbol type)
 	{
-		var properties = type.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract").Where(x => x.IsStatic == false).ToList();
+		var properties = type.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract").Where(x => !x.IsStatic).ToList();
 		foreach (var property in properties)
 		{
 			if (property.Type is INamedTypeSymbol propertyType)

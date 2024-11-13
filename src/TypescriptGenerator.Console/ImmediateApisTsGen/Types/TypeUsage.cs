@@ -1,6 +1,6 @@
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
-public enum TypeUsage
+internal enum TypeUsage
 {
 	Request,
 	Response,

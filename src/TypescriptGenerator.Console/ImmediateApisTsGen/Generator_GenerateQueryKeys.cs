@@ -9,7 +9,7 @@ internal partial class Generator
 		var objectBuilder = new TypescriptObjectBuilder("queryKeys");
 		foreach (var endpointDescriptor in EndpointDescriptors)
 		{
-			objectBuilder.WithProperty(endpointDescriptor.EndpointWrapperType.Name, endpointDescriptor.Path);
+			_ = objectBuilder.WithProperty(endpointDescriptor.EndpointWrapperType.Name, endpointDescriptor.Path);
 		}
 
 		return objectBuilder.Build();

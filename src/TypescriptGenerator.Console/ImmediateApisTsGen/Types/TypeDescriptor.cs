@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
-public record TypeDescriptor
+internal record TypeDescriptor
 {
 	public required INamedTypeSymbol TypeSymbol { get; init; }
 	public required TypeUsage TypeUsage { get; init; }

@@ -1,6 +1,6 @@
 export function {{ query_name }}({{ if data_type }}request: MaybeRef<{{ data_type }}>, {{ end }}queryOptions: ExtraQueryOptions = {}) {
 	return useQuery({
-		queryKey: [{{ query_key }}{{ if data_type }}, { request }{{ end }}],
+		queryKey: [{{ query_key }}{{ if data_type }}, { ...request }{{ end }}],
 		queryFn: () => {{ fetcher_function_name }}({{ if data_type }}unref(request){{ end }}),
 		staleTime: {{ stale_time }},
 		retry: true,

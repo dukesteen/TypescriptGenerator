@@ -181,8 +181,11 @@ internal partial class Generator
 				}
 				else
 				{
-					logger.LogError("Unsupported parameter type {ParameterType} for property {PropertyName} in request type {RequestType}",
-						property.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), property.Name, endpointDescriptor.RequestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+					if (!property.IsStatic)
+					{
+						logger.LogError("Unsupported parameter type {ParameterType} for property {PropertyName} in request type {RequestType}",
+							property.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), property.Name, endpointDescriptor.RequestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+					}
 				}
 			}
 		}

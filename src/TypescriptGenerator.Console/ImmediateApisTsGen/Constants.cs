@@ -16,7 +16,7 @@ internal static class Constants
 	public static readonly Dictionary<string, ValibotSchema> RequestTypeMappings = new() {
 		{"string", ValibotSchema.StringSchema},
 		{"int", ValibotSchema.NumberSchema},
-		{"long", ValibotSchema.BigIntSchemaRequest},
+		{"long", ValibotSchema.StringSchema},
 		{"double", ValibotSchema.NumberSchema},
 		{"float", ValibotSchema.NumberSchema},
 		{"decimal", ValibotSchema.NumberSchema},
@@ -35,12 +35,13 @@ internal static class Constants
 		{"global::NodaTime.LocalDate", ValibotSchema.LocalDateRequest},
 		{"global::NodaTime.Period", ValibotSchema.PeriodRequest},
 		{"global::NodaTime.Duration", ValibotSchema.DurationRequest},
+		{"global::NodaTime.AnnualDate", ValibotSchema.StringSchema},
 	};
 
 	public static readonly Dictionary<string, ValibotSchema> ResponseTypeMappings = new() {
 		{"string", ValibotSchema.StringSchema},
 		{"int", ValibotSchema.NumberSchema},
-		{"long", ValibotSchema.BigIntSchemaResponse},
+		{"long", ValibotSchema.StringSchema},
 		{"double", ValibotSchema.NumberSchema},
 		{"float", ValibotSchema.NumberSchema},
 		{"decimal", ValibotSchema.NumberSchema},
@@ -59,5 +60,6 @@ internal static class Constants
 		{"global::NodaTime.LocalDate", ValibotSchema.LocalDateResponse},
 		{"global::NodaTime.Period", ValibotSchema.PeriodResponse},
 		{"global::NodaTime.Duration", ValibotSchema.DurationResponse},
+		{"global::NodaTime.AnnualDate", ValibotSchema.StringSchema},
 	};
 }

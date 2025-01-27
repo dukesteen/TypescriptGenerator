@@ -29,7 +29,7 @@ internal record ValibotSchema
 	public static ValibotSchema PeriodRequest => Pipe(Instance("Temporal.Duration"), Transform("(input) => input.toString()"));
 	public static ValibotSchema PeriodResponse => Pipe(StringSchema, Transform("(input) => Temporal.Duration.from(input)"));
 	public static ValibotSchema DurationRequest => Pipe(Instance("Temporal.Duration"), Transform("(input) => { const d = input.round({ largestUnit: 'hours' }); return `${d.hours}:${String(d.minutes).padStart(2, '0')}:${String(d.seconds).padStart(2, '0')}`; }"));
-	public static ValibotSchema DurationResponse => Pipe(StringSchema, Transform("(input) => { let [hours, minutes, seconds] = input.split(':'); return Temporal.Duration.from({ hours: parseInt(hours), minutes: parseInt(minutes), seconds: parseInt(seconds) }); }"));
+	public static ValibotSchema DurationResponse => Pipe(StringSchema, Transform("(input) => { let [hours, minutes, seconds] = input.split(':').map((v, i) => i === 2 ? Math.trunc(parseFloat(v)) : parseInt(v)); const isNegative = input.trim().startsWith('-'); return Temporal.Duration.from({ hours, minutes: isNegative ? -Math.abs(minutes) : minutes, seconds: isNegative ? -Math.abs(seconds) : seconds }); }"));
 
 	public static ValibotSchema StringSchema => new() { Name = "string", IsValibotMethod = true };
 	public static ValibotSchema NumberSchema => new() { Name = "number", IsValibotMethod = true };

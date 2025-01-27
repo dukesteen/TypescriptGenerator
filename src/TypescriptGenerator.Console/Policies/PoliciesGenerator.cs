@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.Extensions.Logging;
 
+using TypescriptGenerator.Console.ImmediateApisTsGen.Extensions;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Helpers;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 using TypescriptGenerator.Console.Policies.SyntaxWalkers;
@@ -47,7 +48,7 @@ internal class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorCon
 		{
 			var root = await syntaxTree.GetRootAsync();
 			var semanticModel = compilation.GetSemanticModel(syntaxTree);
-			var classDeclarationCollector = new PolicyDeclarationController(semanticModel);
+			var classDeclarationCollector = new PolicyDeclarationWalker(semanticModel);
 			classDeclarationCollector.Visit(root);
 			policies.AddRange(classDeclarationCollector.PolicyDeclarations);
 		}
@@ -59,9 +60,10 @@ internal class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorCon
 
 		foreach (var policy in policies)
 		{
-			var policyNameProp = policy.GetMembers().OfType<IFieldSymbol>().FirstOrDefault(x => x.Name == "PolicyName");
+			var policyValue = policy.GetAttributeWithFullyQualifiedName("Timespace.GeneratePermissionPolicyAttribute")
+				.ConstructorArguments[0].Value?.ToString() ?? policy.Name;
 
-			_ = policyBuilder.AppendLine($"    {policy.Name.ToCamelCase()}: \"{policyNameProp?.ConstantValue?.ToString()}\",");
+			_ = policyBuilder.AppendLine($"    {policy.Name.ToCamelCase()}: \"{policyValue}\",");
 		}
 
 		_ = policyBuilder.AppendLine("};");

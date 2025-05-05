@@ -36,22 +36,22 @@ internal class ValibotObjectSchemaBuilder(string name)
 				if (member.Value == ValibotSchema.Array(ValibotSchema.InstantResponse))
 				{
 					_ = stringBuilder.AppendLine(
-						$"            {member.Key}: input.{member.Key}.map((item) => input.{member.Key}.toZonedDateTimeISO(Temporal.TimeZone.from(item.timeZoneId))),");
+						$"            {member.Key}: input.{member.Key}.map((item) => input.{member.Key}.toZonedDateTimeISO(item.timeZoneId)),");
 				}
 				else if (member.Value == ValibotSchema.Array(ValibotSchema.Optional(ValibotSchema.InstantResponse)))
 				{
 					_ = stringBuilder.AppendLine(
-						$"            {member.Key}: input.{member.Key}.map((item) => item === null ? null : input.{member.Key}.toZonedDateTimeISO(Temporal.TimeZone.from(item.timeZoneId))),");
+						$"            {member.Key}: input.{member.Key}.map((item) => item === null ? null : input.{member.Key}.toZonedDateTimeISO(item.timeZoneId)),");
 				}
 				else if (member.Value == ValibotSchema.Optional(ValibotSchema.InstantResponse))
 				{
 					_ = stringBuilder.AppendLine(
-						$"            {member.Key}: input.{member.Key}?.toZonedDateTimeISO(Temporal.TimeZone.from(input.timeZoneId)),");
+						$"            {member.Key}: input.{member.Key}?.toZonedDateTimeISO(input.timeZoneId),");
 				}
 				else if (member.Value == ValibotSchema.InstantResponse)
 				{
 					_ = stringBuilder.AppendLine(
-						$"            {member.Key}: input.{member.Key}.toZonedDateTimeISO(Temporal.TimeZone.from(input.timeZoneId)),");
+						$"            {member.Key}: input.{member.Key}.toZonedDateTimeISO(input.timeZoneId),");
 				}
 			}
 

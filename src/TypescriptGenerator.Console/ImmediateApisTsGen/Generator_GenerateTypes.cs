@@ -111,8 +111,8 @@ internal partial class Generator
 			}
 		}
 
-		return TypeDescriptors.Any(x => x.FullyQualifiedName == typeDisplayString)
-			? ValibotSchema.Ref(TypeDescriptors.First(x => x.FullyQualifiedName == typeDisplayString).SchemaName)
+		return TypeDescriptors.Any(x => x.FullyQualifiedName == typeDisplayString && x.TypeUsage == typeUsage)
+			? ValibotSchema.Ref(TypeDescriptors.First(x => x.FullyQualifiedName == typeDisplayString && x.TypeUsage == typeUsage).SchemaName)
 			: throw new InvalidOperationException($"Cannot generate schema for type {typeDisplayString}");
 	}
 }

@@ -24,7 +24,10 @@ internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsa
 		}
 		else if (from.IsGenericType && from.IsSystemType())
 		{
-			throw new InvalidOperationException("Cannot generate TypeScript for type " + from.ToDisplayString());
+			if (from.NullableAnnotation == NullableAnnotation.Annotated)
+				CollectFrom((from.TypeArguments.First() as INamedTypeSymbol)!);
+			else
+				throw new InvalidOperationException("Cannot generate TypeScript for type " + from.ToDisplayString());
 		}
 		else
 		{

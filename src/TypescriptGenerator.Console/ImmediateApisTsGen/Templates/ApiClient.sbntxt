@@ -8,9 +8,9 @@ import { useQuery } from '@tanstack/vue-query'
 import { unref, type MaybeRef } from 'vue'
 
 interface ExtraQueryOptions {
-	enabled?: boolean;
+	enabled?: MaybeRef<boolean>;
 	staleTime?: number;
-	retry?: boolean;
+	retry?: MaybeRef<boolean>;
 }
 
 {{ query_keys }}

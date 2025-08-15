@@ -117,7 +117,7 @@ internal partial class Generator
 		}
 
 		if (endpointDescriptor.HttpMethod is EndpointHttpMethod.Delete)
-			return $"delete<{returnTypeName}>(`{url}`)";
+			return $"delete{(returnTypeName != null ? $"<{returnTypeName}>" : "")}(`{url}`)";
 
 		logger.LogError("Unsupported HTTP method {HttpMethod} for endpoint {EndpointName}", endpointDescriptor.HttpMethod, endpointDescriptor.EndpointWrapperType.Name);
 		throw new InvalidOperationException("Unsupported HTTP method");

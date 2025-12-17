@@ -1,3 +1,4 @@
+global using System;
 using System.Text.Json;
 
 using Cocona;

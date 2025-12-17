@@ -2,11 +2,11 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-
 		<PackAsTool>true</PackAsTool>
 		<IsPackable>true</IsPackable>
-
+		<PackageId>tsgen</PackageId>        <!-- REQUIRED -->
 		<ToolCommandName>tsgen</ToolCommandName>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

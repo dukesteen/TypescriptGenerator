@@ -2,7 +2,7 @@ using System.Text;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Builders;
 
-internal class ValibotEnumSchemaBuilder(string enumName, string enumSchemaName)
+internal class ValibotEnumSchemaBuilder(string enumName, string enumSchemaName, bool flags = false)
 {
 	private Dictionary<string, int> Members { get; } = [];
 
@@ -24,7 +24,7 @@ internal class ValibotEnumSchemaBuilder(string enumName, string enumSchemaName)
 
 		_ = stringBuilder.AppendLine("}");
 		_ = stringBuilder.AppendLine();
-		_ = stringBuilder.Append($"const {enumSchemaName} = v.enum({enumName});");
+		_ = flags ? stringBuilder.AppendLine($"const {enumSchemaName} = v.number()") : stringBuilder.Append($"const {enumSchemaName} = v.enum({enumName});");
 		return stringBuilder.ToString();
 	}
 }

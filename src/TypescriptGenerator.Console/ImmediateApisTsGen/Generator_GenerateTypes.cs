@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 
 using TypescriptGenerator.Console.ImmediateApisTsGen.Builders;
+using TypescriptGenerator.Console.ImmediateApisTsGen.Extensions;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Helpers;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Templates;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
@@ -24,8 +25,10 @@ internal partial class Generator
 				if (generatedEnumNames.Contains(typeDescriptor.SchemaName))
 					continue;
 
+				var flags = typeDescriptor.TypeSymbol.HasAttributeWithFullyQualifiedName("System.FlagsAttribute");
+				
 				var fields = typeDescriptor.TypeSymbol.GetMembers().OfType<IFieldSymbol>();
-				var schemaBuilder = new ValibotEnumSchemaBuilder(typeDescriptor.Name, typeDescriptor.SchemaName);
+				var schemaBuilder = new ValibotEnumSchemaBuilder(typeDescriptor.Name, typeDescriptor.SchemaName, flags);
 				foreach (var member in fields)
 				{
 					_ = schemaBuilder.WithMember(member.Name, (int)member.ConstantValue!);

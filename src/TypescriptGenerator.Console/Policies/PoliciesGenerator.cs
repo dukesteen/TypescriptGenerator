@@ -48,10 +48,11 @@ internal class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorCon
 		{
 			var root = await syntaxTree.GetRootAsync();
 			var semanticModel = compilation.GetSemanticModel(syntaxTree);
-			var classDeclarationCollector = new PolicyDeclarationWalker(semanticModel);
+			var classDeclarationCollector = new PolicyDeclarationWalker(semanticModel, config.GeneratePermissionPolicyAttribute);
 			classDeclarationCollector.Visit(root);
 			policies.AddRange(classDeclarationCollector.PolicyDeclarations);
 		}
+		logger.LogInformation("Found {Count} policies", policies.Count);
 
 		policies = policies.Distinct(SymbolEqualityComparer.Default).OfType<INamedTypeSymbol>().ToList();
 
@@ -60,7 +61,7 @@ internal class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorCon
 
 		foreach (var policy in policies)
 		{
-			var policyValue = policy.GetAttributeWithFullyQualifiedName("Timespace.GeneratePermissionPolicyAttribute")
+			var policyValue = policy.GetAttributeWithFullyQualifiedName(config.GeneratePermissionPolicyAttribute)
 				.ConstructorArguments[0].Value?.ToString() ?? policy.Name;
 
 			_ = policyBuilder.AppendLine($"    {policy.Name.ToCamelCase()}: \"{policyValue}\",");

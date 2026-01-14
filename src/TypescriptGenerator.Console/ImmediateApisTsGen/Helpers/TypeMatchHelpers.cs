@@ -6,6 +6,44 @@ namespace TypescriptGenerator.Console.ImmediateApisTsGen.Helpers;
 
 internal static class TypeMatchHelpers
 {
+	private static bool MatchesAnyNamespacePrefix(string fullyQualifiedTypeName, IReadOnlyList<string> namespacePrefixes)
+	{
+		foreach (var prefix in namespacePrefixes)
+		{
+			if (string.IsNullOrWhiteSpace(prefix))
+				continue;
+
+			var trimmedPrefix = prefix.Trim();
+
+			if (fullyQualifiedTypeName.StartsWith(trimmedPrefix, StringComparison.InvariantCulture))
+				return true;
+
+			if (!trimmedPrefix.StartsWith("global::", StringComparison.InvariantCulture) &&
+				fullyQualifiedTypeName.StartsWith("global::" + trimmedPrefix, StringComparison.InvariantCulture))
+				return true;
+		}
+
+		return false;
+	}
+
+	internal static bool IsInIncludedNamespaces(this ITypeSymbol typeSymbol, IReadOnlyList<string> includedNamespacePrefixes)
+	{
+		if (includedNamespacePrefixes.Count == 0)
+			return true;
+
+		var fullyQualifiedTypeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+		return MatchesAnyNamespacePrefix(fullyQualifiedTypeName, includedNamespacePrefixes);
+	}
+
+	internal static bool IsInExcludedNamespaces(this ITypeSymbol typeSymbol, IReadOnlyList<string> excludedNamespacePrefixes)
+	{
+		if (excludedNamespacePrefixes.Count == 0)
+			return false;
+
+		var fullyQualifiedTypeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+		return MatchesAnyNamespacePrefix(fullyQualifiedTypeName, excludedNamespacePrefixes);
+	}
+
 	internal static bool IsCollection(this INamedTypeSymbol type)
 	{
 		return type.AllInterfaces.Any(i => i.MetadataName == "IEnumerable`1") && type.Name != "String";

@@ -52,7 +52,6 @@ app.AddCommand("generate", async (
 	// Open project ONCE
 	var properties = new Dictionary<string, string>
 	{
-		{ "DesignTimeBuild", "true" },
 		{ "BuildProjectReferences", "false" },
 		{ "SkipCompilerExecution", "true" },
 		{ "RunAnalyzers", "false" },
@@ -77,8 +76,7 @@ app.AddCommand("generate", async (
 	if (errorDiagnostics.Count != 0)
 	{
 		foreach (var errorDiagnostic in errorDiagnostics)
-			logger.LogError("{Message} @ {Location}", errorDiagnostic.GetMessage(), errorDiagnostic.Location.GetLineSpan());
-		return 1;
+			logger.LogError("{Id} {Message} @ {Location}", errorDiagnostic.Descriptor.Id, errorDiagnostic.GetMessage(), errorDiagnostic.Location.GetLineSpan());
 	}
 
 	// Pass compilation to both generators

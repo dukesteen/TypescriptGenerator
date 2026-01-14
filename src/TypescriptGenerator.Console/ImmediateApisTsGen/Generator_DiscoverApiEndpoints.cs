@@ -12,6 +12,39 @@ internal partial class Generator
 {
 	internal List<EndpointDescriptor> DiscoverApiEndpoints(Compilation compilation)
 	{
+		bool IsAllowedByNamespaceFilters(ITypeSymbol typeSymbol)
+		{
+			if (typeSymbol.IsSystemType())
+				return true;
+
+			if (typeSymbol.IsInExcludedNamespaces(config.GenerateTypesInNamespacesExcludes))
+				return false;
+
+			return typeSymbol.IsInIncludedNamespaces(config.GenerateTypesInNamespacesIncludes);
+		}
+
+		bool IsAllowedByNamespaceFiltersRecursively(INamedTypeSymbol typeSymbol)
+		{
+			if (!IsAllowedByNamespaceFilters(typeSymbol))
+				return false;
+
+			if (typeSymbol.IsCollection() || typeSymbol.IsValueTaskT())
+			{
+				foreach (var typeArgument in typeSymbol.TypeArguments.OfType<INamedTypeSymbol>())
+				{
+					if (!IsAllowedByNamespaceFiltersRecursively(typeArgument))
+						return false;
+				}
+			}
+			else if (typeSymbol.IsGenericType && typeSymbol.IsSystemType() && typeSymbol.NullableAnnotation == NullableAnnotation.Annotated)
+			{
+				if (typeSymbol.TypeArguments.FirstOrDefault() is INamedTypeSymbol nullableTypeArgument)
+					return IsAllowedByNamespaceFiltersRecursively(nullableTypeArgument);
+			}
+
+			return true;
+		}
+
 		var endpointClasses = new List<INamedTypeSymbol>();
 		foreach (var syntaxTree in compilation.SyntaxTrees)
 		{
@@ -27,11 +60,19 @@ internal partial class Generator
 		var endpointDescriptors = new List<EndpointDescriptor>();
 		foreach (var endpointClass in endpointClasses)
 		{
+			if (!IsAllowedByNamespaceFilters(endpointClass))
+			{
+				logger.LogDebug(
+					"Endpoint {EndpointName} is excluded or not included for generation, skipping",
+					endpointClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+				continue;
+			}
+
 			var httpAttribute = endpointClass.GetAttributes()
 				.FirstOrDefault(x => Constants.EndpointAttributes.Contains(x.AttributeClass?.ToDisplayString()))!;
 
 			var httpMethod = GetHttpMethodFromAttribute(httpAttribute);
-			var relativePath = httpAttribute.ConstructorArguments[0].Value?.ToString() ??
+			var relativePath = httpAttribute.ConstructorArguments[0].Values.First().Value?.ToString() ??
 				throw new InvalidOperationException("Failed to get relative path");
 
 			var handleMethod = endpointClass.GetMembers().OfType<IMethodSymbol>().FirstOrDefault(x => x.Name == "HandleAsync") ??
@@ -54,10 +95,13 @@ internal partial class Generator
 			if (namedReturnType.TryUnwrapValueTaskT(out var unwrappedReturnType) && unwrappedReturnType is INamedTypeSymbol)
 				namedReturnType = (INamedTypeSymbol)unwrappedReturnType;
 
-			if (namedReturnType.IsGenericType && !config.GenerateTypesInNamespacesIncludes.Any(x =>
-				namedReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(x, StringComparison.InvariantCulture)))
+			if (!IsAllowedByNamespaceFiltersRecursively(namedReturnType))
 			{
-				logger.LogError("Generic return type is not in included namespace to generate types, skipping endpoint {EndpointName} with relative path {RelativePath}", endpointClass.Name, relativePath);
+				logger.LogError(
+					"Return type {ReturnType} is excluded or not included for generation, skipping endpoint {EndpointName} with relative path {RelativePath}",
+					namedReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+					endpointClass.Name,
+					relativePath);
 				continue;
 			}
 
@@ -86,6 +130,16 @@ internal partial class Generator
 			requestTypeHasNoProperties)
 			{
 				if (requestTypeHasNoProperties) requestType = requestTypeSymbol.BaseType ?? null;
+			}
+
+			if (requestType is not null && !IsAllowedByNamespaceFiltersRecursively(requestType))
+			{
+				logger.LogError(
+					"Request type {RequestType} is excluded or not included for generation, skipping endpoint {EndpointName} with relative path {RelativePath}",
+					requestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+					endpointClass.Name,
+					relativePath);
+				continue;
 			}
 
 			endpointDescriptors.Add(new EndpointDescriptor

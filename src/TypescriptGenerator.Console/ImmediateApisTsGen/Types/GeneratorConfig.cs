@@ -9,6 +9,12 @@ internal class GeneratorConfig
 	[JsonPropertyName("generateTypesInNamespacesIncludes")]
 	public List<string> GenerateTypesInNamespacesIncludes { get; init; } = [];
 
+	[JsonPropertyName("generateTypesInNamespacesExcludes")]
+	public List<string> GenerateTypesInNamespacesExcludes { get; init; } = [];
+
+	[JsonPropertyName("generatePermissionPolicyAttribute")]
+	public string GeneratePermissionPolicyAttribute { get; init; } = null!;
+
 	[JsonPropertyName("tsApiClientName")]
 	public required string TsApiClientName { get; init; }
 

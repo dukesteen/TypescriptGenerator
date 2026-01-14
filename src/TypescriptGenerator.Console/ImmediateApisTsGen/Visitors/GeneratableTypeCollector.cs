@@ -5,12 +5,27 @@ using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen.Visitors;
 
-internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsage typeUsage)
+internal class GeneratableTypeCollector(IReadOnlyList<string> includedNamespacePrefixes, IReadOnlyList<string> excludedNamespacePrefixes, TypeUsage typeUsage)
 {
 	public IList<TypeDescriptor> GeneratableTypes { get; } = [];
 
 	internal void CollectFrom(INamedTypeSymbol from)
 	{
+		if (from.IsInExcludedNamespaces(excludedNamespacePrefixes))
+			return;
+		
+		// Handle enums early
+		if (from.TypeKind == TypeKind.Enum && from.IsInIncludedNamespaces(includedNamespacePrefixes))
+		{
+			GeneratableTypes.Add(new TypeDescriptor
+			{
+				TypeSymbol = from,
+				Properties = [],
+				TypeUsage = typeUsage,
+			});
+			return;
+		}
+
 		if (from.BaseType is not null)
 			CollectFrom(from.BaseType);
 
@@ -34,9 +49,7 @@ internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsa
 			if (from.IsSystemType())
 				return;
 
-			if (includedNamespaces.Any(x =>
-				from.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(x, StringComparison.InvariantCulture)) ||
-			includedNamespaces.Count == 0)
+			if (from.IsInIncludedNamespaces(includedNamespacePrefixes))
 			{
 				GeneratableTypes.Add(new TypeDescriptor
 				{
@@ -55,17 +68,24 @@ internal class GeneratableTypeCollector(List<string> includedNamespaces, TypeUsa
 		{
 			if (property.Type is INamedTypeSymbol propertyType)
 			{
-				if (propertyType.IsCollection() || propertyType.IsValueTaskT())
+				if (propertyType.IsCollection() || propertyType.IsValueTaskT() || propertyType.NullableAnnotation == NullableAnnotation.Annotated)
 				{
+					if (propertyType.IsReferenceType && !propertyType.IsSystemType() &&
+					!propertyType.IsInExcludedNamespaces(excludedNamespacePrefixes) &&
+					propertyType.IsInIncludedNamespaces(includedNamespacePrefixes))
+					{
+						CollectFrom(propertyType);
+					}
+
 					foreach (var typeArgument in propertyType.TypeArguments)
 					{
 						if (typeArgument is INamedTypeSymbol namedTypeArgument)
 							CollectFrom(namedTypeArgument);
 					}
 				}
-				else if (includedNamespaces.Any(x =>
-					propertyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(x, StringComparison.InvariantCulture)) ||
-				(includedNamespaces.Count == 0 && !propertyType.IsSystemType()))
+				else if (!propertyType.IsSystemType() &&
+					!propertyType.IsInExcludedNamespaces(excludedNamespacePrefixes) &&
+					propertyType.IsInIncludedNamespaces(includedNamespacePrefixes))
 				{
 					CollectFrom(propertyType);
 				}

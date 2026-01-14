@@ -32,6 +32,14 @@ internal partial class Generator
 			}
 
 			var requestTypeDescriptor = endpointDescriptor.RequestType is not null ? TypeDescriptors.FirstOrDefault(x => x.FullyQualifiedName == endpointDescriptor.RequestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)) : null;
+			if (requestTypeDescriptor is null && endpointDescriptor.RequestType is not null && !endpointDescriptor.RequestType.IsSystemType())
+			{
+				logger.LogError(
+					"Failed to find request type descriptor for endpoint {EndpointName} with request type {RequestType}",
+					endpointDescriptor.EndpointWrapperType.Name,
+					endpointDescriptor.RequestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+				continue;
+			}
 
 			var fetcherFunctionName = endpointDescriptor.EndpointWrapperType.Name.ToCamelCase();
 			var requestDataTypeName = requestTypeDescriptor?.Name;

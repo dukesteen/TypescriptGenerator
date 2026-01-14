@@ -15,7 +15,7 @@ internal record TypeDescriptor
 
 	private string GetTypeName(INamedTypeSymbol type)
 	{
-		var name = TypeSymbol.ContainingType == null ? TypeSymbol.Name : $"{TypeSymbol.ContainingType.Name}{TypeSymbol.Name}";
+		var name = type.ContainingType == null ? type.Name : $"{type.ContainingType.Name}{type.Name}";
 		if (type.IsGenericType)
 		{
 			name = name + "Of" + string.Join("And", type.TypeArguments.Select(x => GetTypeName((INamedTypeSymbol)x)));

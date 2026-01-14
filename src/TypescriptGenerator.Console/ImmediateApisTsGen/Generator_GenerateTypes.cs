@@ -85,7 +85,9 @@ internal partial class Generator
 			}
 
 			if (type.IsListLike())
-				return ValibotSchema.Array(members.First());
+			{
+				return ValibotSchema.Array(type.Name == "IFormFileCollection" ? ValibotSchema.FileSchema : members.First());
+			}
 
 			if (type.IsDictionaryLike())
 				return ValibotSchema.Map(members.First(), members.Last());

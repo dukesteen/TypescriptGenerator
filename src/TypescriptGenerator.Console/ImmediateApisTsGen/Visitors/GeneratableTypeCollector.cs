@@ -61,9 +61,20 @@ internal class GeneratableTypeCollector(IReadOnlyList<string> includedNamespaceP
 		}
 	}
 
+	private static IEnumerable<IPropertySymbol> GetAllPropertiesIncludingInherited(INamedTypeSymbol type)
+	{
+		var currentType = type;
+		while (currentType != null && !currentType.IsSystemType())
+		{
+			foreach (var property in currentType.GetMembers().OfType<IPropertySymbol>())
+				yield return property;
+			currentType = currentType.BaseType;
+		}
+	}
+
 	private List<PropertyDescriptor> GetPropertiesFromNamedTypeSymbol(INamedTypeSymbol type)
 	{
-		var properties = type.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract").Where(x => !x.IsStatic).ToList();
+		var properties = GetAllPropertiesIncludingInherited(type).Where(x => x.Name != "EqualityContract").Where(x => !x.IsStatic).ToList();
 		foreach (var property in properties)
 		{
 			if (property.Type is INamedTypeSymbol propertyType)

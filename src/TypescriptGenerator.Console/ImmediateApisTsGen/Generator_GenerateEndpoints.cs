@@ -138,7 +138,7 @@ internal partial class Generator
 		if (endpointDescriptor.RequestType is null)
 			return parameters;
 
-		var requestTypeProperties = endpointDescriptor.RequestType.GetMembers().OfType<IPropertySymbol>().Where(x => x.Name != "EqualityContract").ToList();
+		var requestTypeProperties = GetAllPropertiesIncludingInherited(endpointDescriptor.RequestType).Where(x => x.Name != "EqualityContract").Where(x => !x.IsStatic).ToList();
 		if (endpointDescriptor is { RequestTypeBoundAs: RequestTypeBindingOptions.Parameters, RequestType: not null })
 		{
 			foreach (var property in requestTypeProperties)
@@ -217,9 +217,39 @@ internal partial class Generator
 		else
 		{
 			if (requestTypeProperties.Count > 0)
-				parameters.Add(new() { Name = "body", ParameterType = ParameterType.Body, PropertyPath = null, });
+			{
+				// GET/DELETE: treat unattributed properties as query params
+				// POST/PUT/PATCH: treat unattributed properties as body params
+				if (endpointDescriptor.HttpMethod is EndpointHttpMethod.Get or EndpointHttpMethod.Delete)
+				{
+					foreach (var property in requestTypeProperties)
+					{
+						parameters.Add(new()
+						{
+							Name = property.Name,
+							ParameterType = ParameterType.Query,
+							PropertyPath = property.Name.ToCamelCase(),
+						});
+					}
+				}
+				else
+				{
+					parameters.Add(new() { Name = "body", ParameterType = ParameterType.Body, PropertyPath = null, });
+				}
+			}
 		}
 
 		return parameters;
+	}
+
+	private static IEnumerable<IPropertySymbol> GetAllPropertiesIncludingInherited(INamedTypeSymbol type)
+	{
+		var currentType = type;
+		while (currentType != null && !currentType.IsSystemType())
+		{
+			foreach (var property in currentType.GetMembers().OfType<IPropertySymbol>())
+				yield return property;
+			currentType = currentType.BaseType;
+		}
 	}
 }

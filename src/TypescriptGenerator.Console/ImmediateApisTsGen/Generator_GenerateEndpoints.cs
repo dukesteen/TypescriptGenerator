@@ -189,11 +189,15 @@ internal partial class Generator
 				}
 				else
 				{
-					if (!property.IsStatic)
+					// No binding attribute - infer based on HTTP method
+					// For GET/DELETE: treat as query parameter
+					// For POST/PUT/PATCH: treat as query parameter (body would need explicit [FromBody])
+					parameters.Add(new()
 					{
-						logger.LogError("Unsupported parameter type {ParameterType} for property {PropertyName} in request type {RequestType}",
-							property.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), property.Name, endpointDescriptor.RequestType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
-					}
+						Name = property.Name,
+						ParameterType = ParameterType.Query,
+						PropertyPath = property.Name.ToCamelCase(),
+					});
 				}
 			}
 		}

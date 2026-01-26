@@ -20,17 +20,17 @@ internal record ValibotSchema
 	public static ValibotSchema Pipe(ValibotSchema schema1, ValibotSchema schema2, ValibotSchema schema3, ValibotSchema schema4, ValibotSchema schema5) => new() { Name = "pipe", IsValibotMethod = true, Members = new List<ValibotSchema>([schema1, schema2, schema3, schema4, schema5]).ToEquatableReadOnlyList() };
 	public static ValibotSchema Transform(string function) => new() { Name = "transform", IsValibotMethod = true, Members = new List<ValibotSchema>([new ValibotSchema { Name = function }]).ToEquatableReadOnlyList() };
 
-	public static ValibotSchema InstantRequest => Pipe(Instance("Temporal.Instant"), Transform("(input) => input.toString()"));
+	public static ValibotSchema InstantRequest => Pipe(Custom("Temporal.Instant"), Transform("(input) => input.toString()"));
 	public static ValibotSchema InstantResponse => Pipe(StringSchema, Transform("(input) => Temporal.Instant.from(input)"));
-	public static ValibotSchema ZonedDateTimeRequest => Pipe(Instance("Temporal.ZonedDateTime"), Transform("(input) => input.toString()"));
+	public static ValibotSchema ZonedDateTimeRequest => Pipe(Custom("Temporal.ZonedDateTime"), Transform("(input) => input.toString()"));
 	public static ValibotSchema ZonedDateTimeResponse => Pipe(StringSchema, Transform("(input) => Temporal.ZonedDateTime.from(input)"));
-	public static ValibotSchema LocalDateRequest => Pipe(Instance("Temporal.PlainDate"), Transform("(input) => input.toString()"));
+	public static ValibotSchema LocalDateRequest => Pipe(Custom("Temporal.PlainDate"), Transform("(input) => input.toString()"));
 	public static ValibotSchema LocalDateResponse => Pipe(StringSchema, Transform("(input) => Temporal.PlainDate.from(input)"));
-	public static ValibotSchema LocalTimeRequest => Pipe(Instance("Temporal.PlainTime"), Transform("(input) => input.toString()"));
+	public static ValibotSchema LocalTimeRequest => Pipe(Custom("Temporal.PlainTime"), Transform("(input) => input.toString()"));
 	public static ValibotSchema LocalTimeResponse => Pipe(StringSchema, Transform("(input) => Temporal.PlainTime.from(input)"));
-	public static ValibotSchema PeriodRequest => Pipe(Instance("Temporal.Duration"), Transform("(input) => input.toString()"));
+	public static ValibotSchema PeriodRequest => Pipe(Custom("Temporal.Duration"), Transform("(input) => input.toString()"));
 	public static ValibotSchema PeriodResponse => Pipe(StringSchema, Transform("(input) => Temporal.Duration.from(input)"));
-	public static ValibotSchema DurationRequest => Pipe(Instance("Temporal.Duration"), Transform("(input) => { const d = input.round({ largestUnit: 'hours' }); return `${d.hours}:${String(Math.abs(d.minutes)).padStart(2, '0')}:${String(Math.abs(d.seconds)).padStart(2, '0')}`; }"));
+	public static ValibotSchema DurationRequest => Pipe(Custom("Temporal.Duration"), Transform("(input) => { const d = input.round({ largestUnit: 'hours' }); return `${d.hours}:${String(Math.abs(d.minutes)).padStart(2, '0')}:${String(Math.abs(d.seconds)).padStart(2, '0')}`; }"));
 	public static ValibotSchema DurationResponse => Pipe(StringSchema, Transform("(input) => { let [hours, minutes, seconds] = input.split(':').map((v, i) => i === 2 ? Math.trunc(parseFloat(v)) : parseInt(v)); const isNegative = input.trim().startsWith('-'); return Temporal.Duration.from({ hours, minutes: isNegative ? -Math.abs(minutes) : minutes, seconds: isNegative ? -Math.abs(seconds) : seconds }); }"));
 
 	public static ValibotSchema StringSchema => new() { Name = "string", IsValibotMethod = true };
@@ -41,6 +41,7 @@ internal record ValibotSchema
 	public static ValibotSchema BooleanSchema => new() { Name = "boolean", IsValibotMethod = true };
 	public static ValibotSchema FileSchema => new() { Name = "file", IsValibotMethod = true };
 	public static ValibotSchema Instance(string name) => new() { Name = "instance", IsValibotMethod = true, Members = new List<ValibotSchema>([new ValibotSchema { Name = name }]).ToEquatableReadOnlyList() };
+	public static ValibotSchema Custom(string name) => new() { Name = $"v.custom<{name}>((val) => val instanceof {name})", IsValibotMethod = false };
 
 	public static ValibotSchema Ref(string name) => new() { Name = name };
 

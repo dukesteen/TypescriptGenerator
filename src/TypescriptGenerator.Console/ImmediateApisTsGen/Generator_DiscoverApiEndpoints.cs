@@ -181,10 +181,32 @@ internal partial class Generator
 		if (parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Mvc.FromQueryAttribute"))
 			return RequestTypeBindingOptions.Query;
 
-		return parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Mvc.FromFormAttribute")
-			? RequestTypeBindingOptions.Form
-			: parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Http.AsParametersAttribute")
-			? RequestTypeBindingOptions.Parameters
-			: RequestTypeBindingOptions.None;
+		if (parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Mvc.FromFormAttribute"))
+			return RequestTypeBindingOptions.Form;
+
+		if (parameterSymbol.HasAttributeWithFullyQualifiedName("Microsoft.AspNetCore.Http.AsParametersAttribute"))
+			return RequestTypeBindingOptions.Parameters;
+
+		// Infer [AsParameters] if the request type's properties have binding attributes
+		if (parameterSymbol.Type is INamedTypeSymbol namedType)
+		{
+			var bindingAttributes = new[]
+			{
+				"Microsoft.AspNetCore.Mvc.FromRouteAttribute",
+				"Microsoft.AspNetCore.Mvc.FromQueryAttribute",
+				"Microsoft.AspNetCore.Mvc.FromFormAttribute",
+				"Microsoft.AspNetCore.Mvc.FromBodyAttribute",
+			};
+
+			var hasPropertyBindingAttributes = namedType.GetMembers()
+				.OfType<IPropertySymbol>()
+				.Where(p => p.Name != "EqualityContract" && !p.IsStatic)
+				.Any(p => bindingAttributes.Any(attr => p.HasAttributeWithFullyQualifiedName(attr)));
+
+			if (hasPropertyBindingAttributes)
+				return RequestTypeBindingOptions.Parameters;
+		}
+
+		return RequestTypeBindingOptions.None;
 	}
 }

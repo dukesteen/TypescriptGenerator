@@ -72,7 +72,10 @@ internal partial class Generator
 				.FirstOrDefault(x => Constants.EndpointAttributes.Contains(x.AttributeClass?.ToDisplayString()))!;
 
 			var httpMethod = GetHttpMethodFromAttribute(httpAttribute);
-			var relativePath = httpAttribute.ConstructorArguments[0].Values.First().Value?.ToString() ??
+			var relativePathArgument = httpAttribute.ConstructorArguments[0];
+			var relativePath = (relativePathArgument.Kind == TypedConstantKind.Array
+					? relativePathArgument.Values.FirstOrDefault().Value
+					: relativePathArgument.Value)?.ToString() ??
 				throw new InvalidOperationException("Failed to get relative path");
 
 			var handleMethod = endpointClass.GetMembers().OfType<IMethodSymbol>().FirstOrDefault(x => x.Name == "HandleAsync") ??

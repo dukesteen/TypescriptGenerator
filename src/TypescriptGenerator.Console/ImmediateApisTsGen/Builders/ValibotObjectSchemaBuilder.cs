@@ -20,7 +20,7 @@ internal class ValibotObjectSchemaBuilder(string name)
 
 		if (Members.Any(x => x.Key == "timeZoneId"))
 		{
-			_ = stringBuilder.AppendLine($"const {name} = v.pipe(");
+			_ = stringBuilder.AppendLine($"export const {name} = v.pipe(");
 			_ = stringBuilder.AppendLine($"    v.object({{");
 			foreach (var member in Members)
 			{
@@ -61,7 +61,7 @@ internal class ValibotObjectSchemaBuilder(string name)
 		}
 		else
 		{
-			_ = stringBuilder.AppendLine($"const {name} = v.object({{");
+			_ = stringBuilder.AppendLine($"export const {name} = v.object({{");
 
 			foreach (var member in Members)
 			{

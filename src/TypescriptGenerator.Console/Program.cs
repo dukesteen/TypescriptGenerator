@@ -79,18 +79,20 @@ app.AddCommand("generate", async (
 			logger.LogError("{Id} {Message} @ {Location}", errorDiagnostic.Descriptor.Id, errorDiagnostic.GetMessage(), errorDiagnostic.Location.GetLineSpan());
 	}
 
-	// Pass compilation to both generators
-	logger.LogInformation("Running policies generator...");
-	stepStopwatch.Restart();
-	var policyGenerator = ActivatorUtilities.CreateInstance<PoliciesGenerator>(serviceProvider, config);
-	var result = await policyGenerator.Execute(compilation);
-	logger.LogInformation("Policies generator completed in {ElapsedMs}ms", stepStopwatch.ElapsedMilliseconds);
+	// Run the TypeScript generator first because it clears and recreates its output root.
+	var result = 0;
 
 	logger.LogInformation("Running TypeScript generator...");
 	stepStopwatch.Restart();
 	var generator = ActivatorUtilities.CreateInstance<Generator>(serviceProvider, config);
-	result = await generator.Execute(compilation);
+	result = Math.Max(result, await generator.Execute(compilation));
 	logger.LogInformation("TypeScript generator completed in {ElapsedMs}ms", stepStopwatch.ElapsedMilliseconds);
+
+	logger.LogInformation("Running policies generator...");
+	stepStopwatch.Restart();
+	var policyGenerator = ActivatorUtilities.CreateInstance<PoliciesGenerator>(serviceProvider, config);
+	result = Math.Max(result, await policyGenerator.Execute(compilation));
+	logger.LogInformation("Policies generator completed in {ElapsedMs}ms", stepStopwatch.ElapsedMilliseconds);
 
 	logger.LogInformation("Total time: {ElapsedMs}ms", totalStopwatch.ElapsedMilliseconds);
 	return result;

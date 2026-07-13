@@ -68,11 +68,15 @@ internal partial class Generator
 		return stringBuilder.ToString();
 	}
 
-	private ValibotSchema GetValibotSchemaFromType(INamedTypeSymbol type, TypeUsage typeUsage, bool alreadyNullable = false)
+	private ValibotSchema GetValibotSchemaFromType(
+		INamedTypeSymbol type,
+		TypeUsage typeUsage,
+		IDictionary<string, TypeDescriptor>? schemaDependencies = null,
+		bool alreadyNullable = false)
 	{
 		if (type.NullableAnnotation == NullableAnnotation.Annotated && !alreadyNullable)
 		{
-			return ValibotSchema.Optional(GetValibotSchemaFromType(type, typeUsage, true));
+			return ValibotSchema.Optional(GetValibotSchemaFromType(type, typeUsage, schemaDependencies, true));
 		}
 
 		if (type.IsCollection())
@@ -81,7 +85,7 @@ internal partial class Generator
 			foreach (var typeArgument in type.TypeArguments)
 			{
 				if (typeArgument is INamedTypeSymbol namedTypeArgument)
-					members.Add(GetValibotSchemaFromType(namedTypeArgument, typeUsage));
+					members.Add(GetValibotSchemaFromType(namedTypeArgument, typeUsage, schemaDependencies));
 			}
 
 			if (type.IsListLike())
@@ -95,7 +99,7 @@ internal partial class Generator
 		else if (type.IsValueTaskT())
 		{
 			if (type.TypeArguments.First() is INamedTypeSymbol namedTypeArgument)
-				return GetValibotSchemaFromType(namedTypeArgument, typeUsage);
+				return GetValibotSchemaFromType(namedTypeArgument, typeUsage, schemaDependencies);
 		}
 
 		var typeDisplayString = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("?", "", StringComparison.InvariantCulture);
@@ -116,8 +120,15 @@ internal partial class Generator
 			}
 		}
 
-		return TypeDescriptors.Any(x => x.FullyQualifiedName == typeDisplayString && x.TypeUsage == typeUsage)
-			? ValibotSchema.Ref(TypeDescriptors.First(x => x.FullyQualifiedName == typeDisplayString && x.TypeUsage == typeUsage).SchemaName)
-			: throw new InvalidOperationException($"Cannot generate schema for type {typeDisplayString}");
+		var typeDescriptor = TypeDescriptors.FirstOrDefault(x => x.FullyQualifiedName == typeDisplayString && x.TypeUsage == typeUsage);
+		if (typeDescriptor is not null)
+		{
+			if (schemaDependencies is not null)
+				schemaDependencies[$"{typeDescriptor.FullyQualifiedName}|{typeDescriptor.TypeUsage}"] = typeDescriptor;
+
+			return ValibotSchema.Ref(typeDescriptor.SchemaName);
+		}
+
+		throw new InvalidOperationException($"Cannot generate schema for type {typeDisplayString}");
 	}
 }

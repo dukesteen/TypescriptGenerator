@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.Extensions.Logging;
 
-using TypescriptGenerator.Console.ImmediateApisTsGen.Templates;
 using TypescriptGenerator.Console.ImmediateApisTsGen.Types;
 
 namespace TypescriptGenerator.Console.ImmediateApisTsGen;
@@ -44,21 +43,11 @@ internal partial class Generator(ILogger<Generator> logger, GeneratorConfig conf
 		logger.LogInformation("Compilation: {Compilation}", compilation.AssemblyName);
 		EndpointDescriptors = DiscoverApiEndpoints(compilation);
 		TypeDescriptors = DiscoverGeneratableTypes();
-		var queryKeys = GenerateQueryKeys();
-		var types = GenerateTypes();
-		var endpoints = GenerateEndpoints();
+		var outputLayout = ResolveOutputLayout();
+		var generatedFiles = GenerateModularFiles();
 
-		var apiClientTemplate = Utility.ApiClientTemplate;
-		var apiClient = await apiClientTemplate.RenderAsync(new
-		{
-			ApiClientName = config.TsApiClientName,
-			ApiClientImportPath = config.TsApiClientPath,
-			QueryKeys = queryKeys,
-			Types = types,
-			Endpoints = endpoints,
-		});
-
-		await File.WriteAllTextAsync(config.OutputPath, apiClient);
+		await WriteGeneratedFiles(outputLayout.ModularRootPath, generatedFiles);
+		await WriteCompatibilityShim(outputLayout);
 
 		logger.LogInformation("TypeScript generator completed");
 		return 0;

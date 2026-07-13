@@ -24,7 +24,9 @@ internal class ValibotEnumSchemaBuilder(string enumName, string enumSchemaName, 
 
 		_ = stringBuilder.AppendLine("}");
 		_ = stringBuilder.AppendLine();
-		_ = flags ? stringBuilder.AppendLine($"const {enumSchemaName} = v.number()") : stringBuilder.Append($"const {enumSchemaName} = v.enum({enumName});");
+		_ = flags
+			? stringBuilder.AppendLine($"export const {enumSchemaName} = v.number()")
+			: stringBuilder.Append($"export const {enumSchemaName} = v.enum({enumName});");
 		return stringBuilder.ToString();
 	}
 }

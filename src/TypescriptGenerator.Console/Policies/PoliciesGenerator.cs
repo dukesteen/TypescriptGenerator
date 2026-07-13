@@ -69,7 +69,12 @@ internal class PoliciesGenerator(ILogger<PoliciesGenerator> logger, GeneratorCon
 
 		_ = policyBuilder.AppendLine("};");
 
-		await File.WriteAllTextAsync(config.PoliciesOutputPath, policyBuilder.ToString());
+		var fullPoliciesOutputPath = Path.GetFullPath(config.PoliciesOutputPath);
+		var outputDirectory = Path.GetDirectoryName(fullPoliciesOutputPath)
+			?? throw new InvalidOperationException("Policies output path does not have a directory.");
+
+		Directory.CreateDirectory(outputDirectory);
+		await File.WriteAllTextAsync(fullPoliciesOutputPath, policyBuilder.ToString());
 
 		logger.LogInformation("Policies generator finished");
 
